@@ -55,7 +55,7 @@ dev.get_device_info()
 ### Linux and Mac OS X
 
 ```shell
-mkdir -p ~/virtualenvs/serial_interface
+mkdir -p ~/virtualenvs/
 virtualenv ~/virtualenvs/serial_interface
 #Python3
 virtualenv -p python3 ~/virtualenvs/serial_interface
