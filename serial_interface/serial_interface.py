@@ -107,12 +107,12 @@ class SerialInterface(serial.Serial):
         if self.debug:
             print(*args)
 
-    def write_check_freq(self,cmd_str,delay_write=False,lock_=True):
+    def write_check_freq(self,data,delay_write=False,lock_=True):
         '''
         Use instead of self.write when you want to ensure that
         serial write commands do not happen too
         frequently. delay_write=True waits and then writes the serial
-        command, delay_write=False raises WriteFrequencyError
+        data, delay_write=False raises WriteFrequencyError
         Exception if time between method calls is too short. Might
         remove delay_write option if it turns out to be
         unnecessary.
@@ -127,39 +127,39 @@ class SerialInterface(serial.Serial):
                 raise WriteFrequencyError("Time between writes needs to be > {0}s".format(self._write_write_delay))
         bytes_written = 0
         if lock_:
-            bytes_written = self._write_check_freq_locked(cmd_str,delay_write)
+            bytes_written = self._write_check_freq_locked(data,delay_write)
         else:
-            bytes_written = self._write_check_freq_unlocked(cmd_str)
-        self._debug_print('command:', cmd_str)
+            bytes_written = self._write_check_freq_unlocked(data)
+        self._debug_print('data:', data)
         self._debug_print('bytes_written:', bytes_written)
         return bytes_written
 
-    def _write_check_freq_locked(self,cmd_str,blocking=True):
+    def _write_check_freq_locked(self,data,blocking=True):
         bytes_written = 0
         lock_acquired = self._lock.acquire(blocking)
         if not lock_acquired:
             raise WriteFrequencyError("Time between writes needs to be larger.")
         try:
-            bytes_written = self._write_check_freq_unlocked(cmd_str)
+            bytes_written = self._write_check_freq_unlocked(data)
         finally:
             self._lock.release()
 
         return bytes_written
 
-    def _write_check_freq_unlocked(self,cmd_str):
+    def _write_check_freq_unlocked(self,data):
         bytes_written = 0
         try:
             try:
-                bytes_written = self.write(cmd_str.encode())
+                bytes_written = self.write(data.encode())
             except (UnicodeDecodeError):
-                bytes_written = self.write(cmd_str)
+                bytes_written = self.write(data)
             if bytes_written > 0:
                 self._time_write_prev = time.time()
         except (serial.writeTimeoutError):
             bytes_written = 0
         return bytes_written
 
-    def write_read(self,cmd_str,use_readline=True,check_write_freq=False,max_read_attempts=100,delay_write=True,match_chars=False,size=None):
+    def write_read(self,data,use_readline=True,check_write_freq=False,max_read_attempts=100,delay_write=True,match_chars=False,size=None):
         '''
         A simple self.write followed by a self.readline with a
         delay set by write_read_delay when use_readline=True and
@@ -180,10 +180,14 @@ class SerialInterface(serial.Serial):
         try:
             self.reset_output_buffer()
             self.reset_input_buffer()
+            bytes_written = 0
             if check_write_freq:
-                bytes_written = self.write_check_freq(cmd_str,delay_write=delay_write,lock_=False)
+                bytes_written = self.write_check_freq(data,delay_write=delay_write,lock_=False)
             else:
-                bytes_written = self.write(cmd_str)
+                try:
+                    bytes_written = self.write(data.encode())
+                except (UnicodeDecodeError):
+                    bytes_written = self.write(data)
             if bytes_written > 0:
                 time.sleep(self._write_read_delay)
                 response = self._read_with_retry(use_readline,max_read_attempts,match_chars,size)
@@ -257,12 +261,12 @@ class SerialInterface(serial.Serial):
         }
         return serial_interface_info
 
-    def check_write_freq(self,write_period_desired,cmd_str,delay_write=False):
+    def check_write_freq(self,write_period_desired,data,delay_write=False):
         cycle_count = 100
         time_start = time.time()
         time_prev = time.time()
         for cycle_n in range(cycle_count):
-            self.write_check_freq(cmd_str,delay_write)
+            self.write_check_freq(data,delay_write)
             sleep_duration = write_period_desired - (time.time() - time_prev)
             if sleep_duration > 0:
                 time.sleep(sleep_duration)
@@ -271,13 +275,13 @@ class SerialInterface(serial.Serial):
         write_period_actual = (time_stop - time_start)/cycle_count
         print('desired write period: {0}, actual write period: {1}'.format(write_period_desired,write_period_actual))
 
-    def check_write_read_freq(self,write_period_desired,cmd_str,use_readline=True,check_write_freq=False,max_read_attempts=100,delay_write=True,match_chars=False):
+    def check_write_read_freq(self,write_period_desired,data,use_readline=True,check_write_freq=False,max_read_attempts=100,delay_write=True,match_chars=False):
         cycle_count = 100
         time_start = time.time()
         time_prev = time.time()
         response = ''
         for cycle_n in range(cycle_count):
-            response = self.write_read(cmd_str,use_readline,check_write_freq,max_read_attempts,delay_write,match_chars)
+            response = self.write_read(data,use_readline,check_write_freq,max_read_attempts,delay_write,match_chars)
             sleep_duration = write_period_desired - (time.time() - time_prev)
             if sleep_duration > 0:
                 time.sleep(sleep_duration)
