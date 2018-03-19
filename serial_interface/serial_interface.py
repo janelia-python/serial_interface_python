@@ -56,11 +56,11 @@ class SerialInterface(serial.Serial):
     dev = SerialInterface(port='COM3') # Windows
     dev.get_device_info()
     '''
-    TIMEOUT = 0.05
-    WRITE_READ_DELAY = 0.001
-    WRITE_WRITE_DELAY = 0.005
-    OPEN_CHARS = "([{"
-    CLOSE_CHARS = ")]}"
+    _TIMEOUT = 0.05
+    _WRITE_READ_DELAY = 0.001
+    _WRITE_WRITE_DELAY = 0.005
+    _OPEN_CHARS = "([{"
+    _CLOSE_CHARS = ")]}"
 
     def __init__(self, *args, **kwargs):
         try:
@@ -74,11 +74,11 @@ class SerialInterface(serial.Serial):
         try:
             self._write_read_delay = kwargs.pop('write_read_delay')
         except KeyError:
-            self._write_read_delay = self.WRITE_READ_DELAY
+            self._write_read_delay = self._WRITE_READ_DELAY
         try:
             self._write_write_delay = kwargs.pop('write_write_delay')
         except KeyError:
-            self._write_write_delay = self.WRITE_WRITE_DELAY
+            self._write_write_delay = self._WRITE_WRITE_DELAY
         try:
             self.device_name = kwargs.pop('device_name')
         except KeyError:
@@ -87,7 +87,7 @@ class SerialInterface(serial.Serial):
         if ('port' not in kwargs) or (kwargs['port'] is None):
             kwargs.update({'port': find_serial_interface_port(try_ports=try_ports,debug=self.debug)})
         if 'timeout' not in kwargs:
-            kwargs.update({'timeout': self.TIMEOUT})
+            kwargs.update({'timeout': self._TIMEOUT})
 
         super(SerialInterface,self).__init__(*args,**kwargs)
         atexit.register(self._exit_serial_interface)
@@ -240,13 +240,13 @@ class SerialInterface(serial.Serial):
         line = bytearray()
         time_now = time.time()
         time_prev = time_now
-        while ((open_char_count == 0) or (close_char_count == 0) or (open_char_count != close_char_count)) and ((time_now-time_prev) <= self.TIMEOUT):
+        while ((open_char_count == 0) or (close_char_count == 0) or (open_char_count != close_char_count)) and ((time_now-time_prev) <= self._TIMEOUT):
             c = self.read(1)
             time_now = time.time()
             if c:
-                if c in self.OPEN_CHARS:
+                if c in self._OPEN_CHARS:
                     open_char_count += 1
-                elif c in self.CLOSE_CHARS:
+                elif c in self._CLOSE_CHARS:
                     close_char_count += 1
                 line += c
                 time_prev = time_now
