@@ -2,6 +2,7 @@ from __future__ import print_function, division
 import serial
 import os
 import time
+from timeit import default_timer as timer
 import platform
 import atexit
 import operator
@@ -67,10 +68,9 @@ class SerialInterface(serial.Serial):
             self.debug = kwargs.pop('debug')
         except KeyError:
             self.debug = DEBUG
+        try_ports = None
         if 'try_ports' in kwargs:
             try_ports = kwargs.pop('try_ports')
-        else:
-            try_ports = None
         try:
             self._write_read_delay = kwargs.pop('write_read_delay')
         except KeyError:
@@ -91,7 +91,7 @@ class SerialInterface(serial.Serial):
 
         super(SerialInterface,self).__init__(*args,**kwargs)
         atexit.register(self._exit_serial_interface)
-        self._time_write_prev = time.time()
+        self._time_write_prev = timer()
         self._lock = threading.Lock()
 
     def _exit_serial_interface(self):
@@ -117,7 +117,7 @@ class SerialInterface(serial.Serial):
         remove delay_write option if it turns out to be
         unnecessary.
         '''
-        time_now = time.time()
+        time_now = timer()
         time_since_write_prev = time_now - self._time_write_prev
         if time_since_write_prev < self._write_write_delay:
             delay_time_needed = self._write_write_delay - time_since_write_prev
@@ -154,7 +154,7 @@ class SerialInterface(serial.Serial):
             except (UnicodeDecodeError):
                 bytes_written = self.write(data)
             if bytes_written > 0:
-                self._time_write_prev = time.time()
+                self._time_write_prev = timer()
         except (serial.writeTimeoutError):
             bytes_written = 0
         return bytes_written
@@ -238,11 +238,11 @@ class SerialInterface(serial.Serial):
         open_char_count = 0
         close_char_count = 0
         line = bytearray()
-        time_now = time.time()
+        time_now = timer()
         time_prev = time_now
         while ((open_char_count == 0) or (close_char_count == 0) or (open_char_count != close_char_count)) and ((time_now-time_prev) <= self._TIMEOUT):
             c = self.read(1)
-            time_now = time.time()
+            time_now = timer()
             if c:
                 if c in self._OPEN_CHARS:
                     open_char_count += 1
@@ -263,30 +263,30 @@ class SerialInterface(serial.Serial):
 
     def check_write_freq(self,write_period_desired,data,delay_write=False):
         cycle_count = 100
-        time_start = time.time()
-        time_prev = time.time()
+        time_start = timer()
+        time_prev = timer()
         for cycle_n in range(cycle_count):
             self.write_check_freq(data,delay_write)
-            sleep_duration = write_period_desired - (time.time() - time_prev)
+            sleep_duration = write_period_desired - (timer() - time_prev)
             if sleep_duration > 0:
                 time.sleep(sleep_duration)
-            time_prev = time.time()
-        time_stop = time.time()
+            time_prev = timer()
+        time_stop = timer()
         write_period_actual = (time_stop - time_start)/cycle_count
         print('desired write period: {0}, actual write period: {1}'.format(write_period_desired,write_period_actual))
 
     def check_write_read_freq(self,write_period_desired,data,use_readline=True,check_write_freq=False,max_read_attempts=100,delay_write=True,match_chars=False):
         cycle_count = 100
-        time_start = time.time()
-        time_prev = time.time()
+        time_start = timer()
+        time_prev = timer()
         response = ''
         for cycle_n in range(cycle_count):
             response = self.write_read(data,use_readline,check_write_freq,max_read_attempts,delay_write,match_chars)
-            sleep_duration = write_period_desired - (time.time() - time_prev)
+            sleep_duration = write_period_desired - (timer() - time_prev)
             if sleep_duration > 0:
                 time.sleep(sleep_duration)
-            time_prev = time.time()
-        time_stop = time.time()
+            time_prev = timer()
+        time_stop = timer()
         write_period_actual = (time_stop - time_start)/cycle_count
         print('desired write read period: {0}, actual write read period: {1}'.format(write_period_desired,write_period_actual))
         print('response: {0}'.format(response))
@@ -315,22 +315,18 @@ class SerialInterfaces(list):
     '''
 
     def __init__(self,*args,**kwargs):
+        debug = DEBUG
         if 'debug' in kwargs:
             debug = kwargs['debug']
-        else:
-            debug = DEBUG
+        use_ports = None
         if 'use_ports' in kwargs:
             use_ports = kwargs.pop('use_ports')
-        else:
-            use_ports = None
+        try_ports = None
         if 'try_ports' in kwargs:
             try_ports = kwargs.pop('try_ports')
-        else:
-            try_ports = None
+        device_names = []
         if 'device_names' in kwargs:
             device_names = kwargs.pop('device_names')
-        else:
-            device_names = []
 
         if use_ports is not None:
             serial_interface_ports = use_ports
