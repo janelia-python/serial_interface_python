@@ -1,30 +1,22 @@
-# serial_interface_python
+#+TITLE: serial_interface_python
+#+AUTHOR: Peter Polidoro
+#+EMAIL: peterpolidoro@gmail.com
 
-This Python package (serial_interface) creates a class named
-SerialInterface, which inherits from serial.Serial and adds methods to
-it, like auto discovery of available serial ports in Linux, Windows,
-and Mac OS X. The SerialInterface class can be used by itself, but it is
-mostly intended to be a base class for other serial port devices with
-higher level functions. SerialInterfaces creates a list of SerialInterface
-instances from all available serial ports.
+* Package Information
+  - Author :: Peter Polidoro
+  - License :: BSD
 
-Authors:
+  This Python package (serial_interface) creates a class named
+  SerialInterface, which inherits from serial.Serial and adds methods to
+  it, like auto discovery of available serial ports in Linux, Windows,
+  and Mac OS X. The SerialInterface class can be used by itself, but it is
+  mostly intended to be a base class for other serial port devices with
+  higher level functions. SerialInterfaces creates a list of SerialInterface
+  instances from all available serial ports.
 
-    Peter Polidoro <polidorop@janelia.hhmi.org>
+* Example Usage
 
-Contributors:
-
-    James Pells <https://github.com/jpells>
-    Roger Zatkoff <https://github.com/rpzatkoff>
-
-License:
-
-    BSD
-
-## Example Usage
-
-
-```python
+  #+BEGIN_SRC python
 from serial_interface import SerialInterface, find_serial_interface_ports
 find_serial_interface_ports() # Returns list of available serial ports
 dev = SerialInterface() # Might automatically find device if one available
@@ -33,9 +25,9 @@ dev = SerialInterface(port='/dev/ttyUSB0') # Linux
 dev = SerialInterface(port='/dev/tty.usbmodem262471') # Mac OS X
 dev = SerialInterface(port='COM3') # Windows
 dev.get_device_info()
-```
+  #+END_SRC
 
-```python
+  #+BEGIN_SRC python
 from serial_interface import SerialInterfaces
 devs = SerialInterfaces()  # Might automatically find all available devices
 # if they are not found automatically, specify ports to use
@@ -46,27 +38,27 @@ devs.get_devices_info()
 devs.sort_by_port()
 dev = devs[0]
 dev.get_device_info()
-```
+  #+END_SRC
 
-## Installation
+* Installation
 
-[Setup Python](https://github.com/janelia-pypi/python_setup)
+  [[https://github.com/janelia-pypi/python_setup][Setup Python]]
 
-### Linux and Mac OS X
+** Linux and Mac OS X
 
-```shell
+   #+BEGIN_SRC sh
 mkdir -p ~/virtualenvs/
 virtualenv ~/virtualenvs/serial_interface
 #Python3
 virtualenv -p python3 ~/virtualenvs/serial_interface
 source ~/virtualenvs/serial_interface/bin/activate
 pip install serial_interface
-```
+   #+END_SRC
 
-### Windows
+** Windows
 
-```shell
+   #+BEGIN_SRC sh
 virtualenv C:\virtualenvs\serial_interface
 C:\virtualenvs\serial_interface\Scripts\activate
 pip install serial_interface
-```
+   #+END_SRC
