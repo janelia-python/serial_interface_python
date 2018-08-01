@@ -17,27 +17,27 @@
 * Example Usage
 
   #+BEGIN_SRC python
-from serial_interface import SerialInterface, find_serial_interface_ports
-find_serial_interface_ports() # Returns list of available serial ports
-dev = SerialInterface() # Might automatically find device if one available
-# if it is not found automatically, specify port directly
-dev = SerialInterface(port='/dev/ttyUSB0') # Linux
-dev = SerialInterface(port='/dev/tty.usbmodem262471') # Mac OS X
-dev = SerialInterface(port='COM3') # Windows
-dev.get_device_info()
+    from serial_interface import SerialInterface, find_serial_interface_ports
+    find_serial_interface_ports() # Returns list of available serial ports
+    dev = SerialInterface() # Might automatically find device if one available
+    # if it is not found automatically, specify port directly
+    dev = SerialInterface(port='/dev/ttyUSB0') # Linux
+    dev = SerialInterface(port='/dev/tty.usbmodem262471') # Mac OS X
+    dev = SerialInterface(port='COM3') # Windows
+    dev.get_device_info()
   #+END_SRC
 
   #+BEGIN_SRC python
-from serial_interface import SerialInterfaces
-devs = SerialInterfaces()  # Might automatically find all available devices
-# if they are not found automatically, specify ports to use
-devs = SerialInterfaces(use_ports=['/dev/ttyUSB0','/dev/ttyUSB1']) # Linux
-devs = SerialInterfaces(use_ports=['/dev/tty.usbmodem262471','/dev/tty.usbmodem262472']) # Mac OS X
-devs = SerialInterfaces(use_ports=['COM3','COM4']) # Windows
-devs.get_devices_info()
-devs.sort_by_port()
-dev = devs[0]
-dev.get_device_info()
+    from serial_interface import SerialInterfaces
+    devs = SerialInterfaces()  # Might automatically find all available devices
+    # if they are not found automatically, specify ports to use
+    devs = SerialInterfaces(use_ports=['/dev/ttyUSB0','/dev/ttyUSB1']) # Linux
+    devs = SerialInterfaces(use_ports=['/dev/tty.usbmodem262471','/dev/tty.usbmodem262472']) # Mac OS X
+    devs = SerialInterfaces(use_ports=['COM3','COM4']) # Windows
+    devs.get_devices_info()
+    devs.sort_by_port()
+    dev = devs[0]
+    dev.get_device_info()
   #+END_SRC
 
 * Installation
@@ -47,18 +47,18 @@ dev.get_device_info()
 ** Linux and Mac OS X
 
    #+BEGIN_SRC sh
-mkdir -p ~/virtualenvs/
-virtualenv ~/virtualenvs/serial_interface
-#Python3
-virtualenv -p python3 ~/virtualenvs/serial_interface
-source ~/virtualenvs/serial_interface/bin/activate
-pip install serial_interface
+     mkdir -p ~/virtualenvs/
+     virtualenv ~/virtualenvs/serial_interface
+     #Python3
+     virtualenv -p python3 ~/virtualenvs/serial_interface
+     source ~/virtualenvs/serial_interface/bin/activate
+     pip install serial_interface
    #+END_SRC
 
 ** Windows
 
    #+BEGIN_SRC sh
-virtualenv C:\virtualenvs\serial_interface
-C:\virtualenvs\serial_interface\Scripts\activate
-pip install serial_interface
+     virtualenv C:\virtualenvs\serial_interface
+     C:\virtualenvs\serial_interface\Scripts\activate
+     pip install serial_interface
    #+END_SRC
