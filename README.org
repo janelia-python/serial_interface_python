@@ -3,8 +3,12 @@
 #+EMAIL: peterpolidoro@gmail.com
 
 * Package Information
-  - Author :: Peter Polidoro
+  - Name :: serial_interface_python
+  - Version :: 1.0.2
   - License :: BSD
+  - URL :: https://github.com/janelia-pypi/serial_interface_python
+  - Author :: Peter Polidoro
+  - Email :: peterpolidoro@gmail.com
 
   This Python package (serial_interface) creates a class named
   SerialInterface, which inherits from serial.Serial and adds methods to
