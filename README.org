@@ -4,7 +4,7 @@
 
 * Package Information
   - Name :: serial_interface_python
-  - Version :: 1.0.2
+  - Version :: 2.0.0
   - License :: BSD
   - URL :: https://github.com/janelia-pypi/serial_interface_python
   - Author :: Peter Polidoro
@@ -65,4 +65,53 @@
      virtualenv C:\virtualenvs\serial_interface
      C:\virtualenvs\serial_interface\Scripts\activate
      pip install serial_interface
+   #+END_SRC
+
+* Development
+
+** Build Docker Image
+
+   #+BEGIN_SRC sh
+
+     docker stop $(docker ps -aq)
+     docker system prune -f
+     docker build -t python_package_development:latest .
+
+   #+END_SRC
+
+** Run Docker Container
+
+   #+BEGIN_SRC sh
+
+     docker run -it --device=/dev/ttyACM0 python_package_development:latest
+
+   #+END_SRC
+
+** Install This Package
+
+   #+BEGIN_SRC sh
+
+     cd python_package
+     python setup.py install
+
+   #+END_SRC
+
+** Run ipython and Test
+
+   #+BEGIN_SRC sh
+
+     ipython
+
+   #+END_SRC
+
+** Commit, Tag, and Upload to Pypi
+
+   #+BEGIN_SRC sh
+
+     # git commit ...
+     # git tag ...
+     python3 setup.py sdist bdist_wheel
+     twine upload dist/*
+     git clean -xdf
+
    #+END_SRC
