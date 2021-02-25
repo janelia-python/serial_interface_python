@@ -59,6 +59,7 @@ class SerialInterface(serial.Serial):
     dev.get_device_info()
     '''
     _TIMEOUT = 0.05
+    _WRITE_TIMEOUT = 0.05
     _WRITE_READ_DELAY = 0.001
     _WRITE_WRITE_DELAY = 0.005
     _OPEN_CHARS = "([{"
@@ -89,6 +90,8 @@ class SerialInterface(serial.Serial):
             kwargs.update({'port': find_serial_interface_port(try_ports=try_ports,debug=self.debug)})
         if 'timeout' not in kwargs:
             kwargs.update({'timeout': self._TIMEOUT})
+        if 'write_timeout' not in kwargs:
+            kwargs.update({'write_timeout': self._WRITE_TIMEOUT})
 
         super(SerialInterface,self).__init__(*args,**kwargs)
         atexit.register(self._exit_serial_interface)
@@ -156,7 +159,7 @@ class SerialInterface(serial.Serial):
                 bytes_written = self.write(data)
             if bytes_written > 0:
                 self._time_write_prev = timer()
-        except (serial.writeTimeoutError):
+        except (serial.SerialTimeoutException):
             bytes_written = 0
         return bytes_written
 
