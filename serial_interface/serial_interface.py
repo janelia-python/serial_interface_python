@@ -182,7 +182,6 @@ class SerialInterface(serial.Serial):
         if not lock_acquired:
             raise WriteFrequencyError("Time between writes needs to be larger.")
         try:
-            self.flush()
             bytes_written = 0
             if check_write_freq:
                 bytes_written = self.write_check_freq(data,delay_write=delay_write,lock_=False)
