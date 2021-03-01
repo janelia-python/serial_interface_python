@@ -7,7 +7,7 @@ import platform
 import atexit
 import operator
 import threading
-import termios
+
 
 try:
     from pkg_resources import get_distribution, DistributionNotFound
@@ -182,14 +182,7 @@ class SerialInterface(serial.Serial):
         if not lock_acquired:
             raise WriteFrequencyError("Time between writes needs to be larger.")
         try:
-            try:
-                self.reset_output_buffer()
-            except termios.error:
-                pass
-            try:
-                self.reset_input_buffer()
-            except termios.error:
-                pass
+            self.flush()
             bytes_written = 0
             if check_write_freq:
                 bytes_written = self.write_check_freq(data,delay_write=delay_write,lock_=False)
