@@ -95,6 +95,9 @@ class SerialInterface(serial.Serial):
 
         super(SerialInterface,self).__init__(*args,**kwargs)
         atexit.register(self._exit_serial_interface)
+
+        self.response = None
+
         self._time_write_prev = timer()
         self._lock = threading.Lock()
 
@@ -222,19 +225,20 @@ class SerialInterface(serial.Serial):
         '''
         Reads data from the device
         '''
-        response = None
+        # save response so it can be used for debugging
+        self.response = None
         if size is not None:
-            response = self.read(size)
+            self.response = self.read(size)
         elif match_chars:
-            response = self._read_until_matching()
+            self.response = self._read_until_matching()
         elif use_readline:
-            response = self.readline()
+            self.response = self.readline()
         else:
             chars_waiting = self.in_waiting
             self._debug_print('chars_waiting:', chars_waiting)
-            response = self.read(chars_waiting)
+            self.response = self.read(chars_waiting)
 
-        return response
+        return self.response
 
     def _read_until_matching(self):
         open_char_count = 0
