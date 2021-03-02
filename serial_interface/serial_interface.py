@@ -96,7 +96,12 @@ class SerialInterface(serial.Serial):
         super(SerialInterface,self).__init__(*args,**kwargs)
         atexit.register(self._exit_serial_interface)
 
-        self.response = None
+        # save write_data so it can be used for debugging
+        self._write_data = None
+        # save bytes_written so it can be used for debugging
+        self._bytes_written = None
+        # save read_data so it can be used for debugging
+        self._read_data = None
 
         self._time_write_prev = timer()
         self._lock = threading.Lock()
@@ -114,7 +119,7 @@ class SerialInterface(serial.Serial):
         if self.debug:
             print(*args)
 
-    def write_check_freq(self,data,delay_write=False,lock_=True):
+    def write_check_freq(self,write_data,delay_write=False,lock_=True):
         '''
         Use instead of self.write when you want to ensure that
         serial write commands do not happen too
@@ -134,74 +139,82 @@ class SerialInterface(serial.Serial):
                 raise WriteFrequencyError("Time between writes needs to be > {0}s".format(self._write_write_delay))
         bytes_written = 0
         if lock_:
-            bytes_written = self._write_check_freq_locked(data,delay_write)
+            bytes_written = self._write_check_freq_locked(write_data,delay_write)
         else:
-            bytes_written = self._write_check_freq_unlocked(data)
-        self._debug_print('data:', data)
+            bytes_written = self._write_check_freq_unlocked(write_data)
+        self._debug_print('write_data:', write_data)
         self._debug_print('bytes_written:', bytes_written)
         return bytes_written
 
-    def _write_check_freq_locked(self,data,blocking=True):
+    def _write_check_freq_locked(self,write_data,blocking=True):
         bytes_written = 0
         lock_acquired = self._lock.acquire(blocking)
         if not lock_acquired:
             raise WriteFrequencyError("Time between writes needs to be larger.")
         try:
-            bytes_written = self._write_check_freq_unlocked(data)
+            bytes_written = self._write_check_freq_unlocked(write_data)
         finally:
             self._lock.release()
 
         return bytes_written
 
-    def _write_check_freq_unlocked(self,data):
-        bytes_written = 0
+    def _write_check_freq_unlocked(self,write_data):
+        self._write_data = None
+        self._bytes_written = 0
         try:
             try:
-                bytes_written = self.write(data.encode())
+                self._write_data = write_data.encode()
+                self._bytes_written = self.write(write_data.encode())
             except (UnicodeDecodeError):
-                bytes_written = self.write(data)
-            if bytes_written > 0:
+                self._write_data = write_data
+                self._bytes_written = self.write(write_data)
+            if self._bytes_written > 0:
                 self._time_write_prev = timer()
         except (serial.SerialTimeoutException):
-            bytes_written = 0
-        return bytes_written
+            self._write_data = None
+            self._bytes_written = 0
+        return self._bytes_written
 
-    def write_read(self,data,use_readline=True,check_write_freq=False,max_read_attempts=100,delay_write=True,match_chars=False,size=None):
+    def write_read(self,write_data,use_readline=True,check_write_freq=False,max_read_attempts=100,delay_write=True,match_chars=False,size=None):
         '''
         A simple self.write followed by a self.readline with a
         delay set by write_read_delay when use_readline=True and
         check_write_freq=False. Setting check_write_freq=True ensures
         the write frequency is not too fast for the serial device to
-        handle. Setting use_readline=False reads all response
+        handle. Setting use_readline=False reads all data
         characters that are available instead of looking for the end
         of line character or timing out.
 
         max_read_attempts opens the possibility to read from the device again
-        if the device did not have the response ready after the first read
+        if the device did not have the data ready after the first read
         '''
 
-        response = None
+        read_data = None
         lock_acquired = self._lock.acquire(delay_write)
         if not lock_acquired:
             raise WriteFrequencyError("Time between writes needs to be larger.")
         try:
-            bytes_written = 0
+            self._write_data = None
+            self._bytes_written = 0
             if check_write_freq:
-                bytes_written = self.write_check_freq(data,delay_write=delay_write,lock_=False)
+                self._bytes_written = self.write_check_freq(write_data,delay_write=delay_write,lock_=False)
             else:
                 try:
-                    bytes_written = self.write(data.encode())
+                    self._write_data = write_data.encode()
+                    self._bytes_written = self.write(write_data.encode())
                 except (UnicodeDecodeError):
-                    bytes_written = self.write(data)
-            if bytes_written > 0:
+                    self._write_data = write_data
+                    self._bytes_written = self.write(write_data)
+            if self._bytes_written > 0:
                 time.sleep(self._write_read_delay)
-                response = self._read_with_retry(use_readline,max_read_attempts,match_chars,size)
-                self._debug_print('response:', response)
+                read_data = self._read_with_retry(use_readline,max_read_attempts,match_chars,size)
+                self._debug_print('read_data:', read_data)
             else:
+                self._write_data = None
                 raise WriteError("No bytes written.")
         finally:
             self._lock.release()
-        return response
+        return read_data
 
     def _read_with_retry(self,use_readline,max_read_attempts,match_chars,size):
         '''
@@ -211,34 +224,33 @@ class SerialInterface(serial.Serial):
         i = 0
         while i < max_read_attempts:
             i += 1
-            response = self._read(use_readline,match_chars,size)
-            if response:
-                return response
+            read_data = self._read(use_readline,match_chars,size)
+            if read_data:
+                return read_data
 
-            self._debug_print('no response -- retrying')
-        if not response:
-            raise ReadError("No response received.")
+            self._debug_print('no read_data -- retrying')
+        if not read_data:
+            raise ReadError("No read_data received.")
         else:
-            return response
+            return read_data
 
     def _read(self,use_readline,match_chars,size):
         '''
         Reads data from the device
         '''
-        # save response so it can be used for debugging
-        self.response = None
+        self._read_data = None
         if size is not None:
-            self.response = self.read(size)
+            self._read_data = self.read(size)
         elif match_chars:
-            self.response = self._read_until_matching()
+            self._read_data = self._read_until_matching()
         elif use_readline:
-            self.response = self.readline()
+            self._read_data = self.readline()
         else:
             chars_waiting = self.in_waiting
             self._debug_print('chars_waiting:', chars_waiting)
-            self.response = self.read(chars_waiting)
+            self._read_data = self.read(chars_waiting)
 
-        return self.response
+        return self._read_data
 
     def _read_until_matching(self):
         open_char_count = 0
@@ -267,12 +279,12 @@ class SerialInterface(serial.Serial):
         }
         return serial_interface_info
 
-    def check_write_freq(self,write_period_desired,data,delay_write=False):
+    def check_write_freq(self,write_period_desired,write_data,delay_write=False):
         cycle_count = 100
         time_start = timer()
         time_prev = timer()
         for cycle_n in range(cycle_count):
-            self.write_check_freq(data,delay_write)
+            self.write_check_freq(write_data,delay_write)
             sleep_duration = write_period_desired - (timer() - time_prev)
             if sleep_duration > 0:
                 time.sleep(sleep_duration)
@@ -281,13 +293,13 @@ class SerialInterface(serial.Serial):
         write_period_actual = (time_stop - time_start)/cycle_count
         print('desired write period: {0}, actual write period: {1}'.format(write_period_desired,write_period_actual))
 
-    def check_write_read_freq(self,write_period_desired,data,use_readline=True,check_write_freq=False,max_read_attempts=100,delay_write=True,match_chars=False):
+    def check_write_read_freq(self,write_period_desired,write_data,use_readline=True,check_write_freq=False,max_read_attempts=100,delay_write=True,match_chars=False):
         cycle_count = 100
         time_start = timer()
         time_prev = timer()
-        response = ''
+        read_data = ''
         for cycle_n in range(cycle_count):
-            response = self.write_read(data,use_readline,check_write_freq,max_read_attempts,delay_write,match_chars)
+            read_data = self.write_read(write_data,use_readline,check_write_freq,max_read_attempts,delay_write,match_chars)
             sleep_duration = write_period_desired - (timer() - time_prev)
             if sleep_duration > 0:
                 time.sleep(sleep_duration)
@@ -295,7 +307,7 @@ class SerialInterface(serial.Serial):
         time_stop = timer()
         write_period_actual = (time_stop - time_start)/cycle_count
         print('desired write read period: {0}, actual write read period: {1}'.format(write_period_desired,write_period_actual))
-        print('response: {0}'.format(response))
+        print('read_data: {0}'.format(read_data))
 
 # device_names example:
 # [{'port':'/dev/ttyACM0',
