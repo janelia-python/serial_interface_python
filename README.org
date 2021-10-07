@@ -3,12 +3,12 @@
 #+EMAIL: peter@polidoro.io
 
 * Package Information
-  - Name :: serial_interface_python
-  - Version :: 2.1.0
-  - License :: BSD
-  - URL :: https://github.com/janelia-pypi/serial_interface_python
-  - Author :: Peter Polidoro
-  - Email :: peter@polidoro.io
+- Name :: serial_interface_python
+- Version :: 2.1.0
+- License :: BSD
+- URL :: https://github.com/janelia-pypi/serial_interface_python
+- Author :: Peter Polidoro
+- Email :: peter@polidoro.io
 
   This Python package (serial_interface) creates a class named
   SerialInterface, which inherits from serial.Serial and adds methods to
@@ -20,21 +20,24 @@
 
 * Example Usage
 
-  #+BEGIN_SRC python
-    from serial_interface import SerialInterface, find_serial_interface_ports
-    find_serial_interface_ports() # Returns list of available serial ports
-    dev = SerialInterface() # Might automatically find device if one available
-    # if it is not found automatically, specify port directly
+#+BEGIN_SRC python
+
+from serial_interface import SerialInterface, find_serial_interface_ports
+find_serial_interface_ports() # Returns list of available serial ports
+dev = SerialInterface() # Might automatically find device if one available
+# if it is not found automatically, specify port directly
     dev = SerialInterface(port='/dev/ttyUSB0') # Linux
     dev = SerialInterface(port='/dev/tty.usbmodem262471') # Mac OS X
     dev = SerialInterface(port='COM3') # Windows
     dev.get_device_info()
-  #+END_SRC
 
-  #+BEGIN_SRC python
-    from serial_interface import SerialInterfaces
-    devs = SerialInterfaces()  # Might automatically find all available devices
-    # if they are not found automatically, specify ports to use
+#+END_SRC
+
+#+BEGIN_SRC python
+
+from serial_interface import SerialInterfaces
+devs = SerialInterfaces()  # Might automatically find all available devices
+# if they are not found automatically, specify ports to use
     devs = SerialInterfaces(use_ports=['/dev/ttyUSB0','/dev/ttyUSB1']) # Linux
     devs = SerialInterfaces(use_ports=['/dev/tty.usbmodem262471','/dev/tty.usbmodem262472']) # Mac OS X
     devs = SerialInterfaces(use_ports=['COM3','COM4']) # Windows
@@ -42,76 +45,30 @@
     devs.sort_by_port()
     dev = devs[0]
     dev.get_device_info()
-  #+END_SRC
+
+#+END_SRC
 
 * Installation
 
-  [[https://github.com/janelia-pypi/python_setup]]
+[[https://github.com/janelia-pypi/python_setup]]
 
 ** Linux and Mac OS X
 
-   #+BEGIN_SRC sh
-     mkdir -p ~/virtualenvs/
-     virtualenv ~/virtualenvs/serial_interface
-     #Python3
-     virtualenv -p python3 ~/virtualenvs/serial_interface
-     source ~/virtualenvs/serial_interface/bin/activate
-     pip install serial_interface
-   #+END_SRC
+#+BEGIN_SRC sh
+
+python3 -m venv ~/venvs/serial_interface
+source ~/venvs/serial_interface/bin/activate
+pip install serial_interface
+
+#+END_SRC
 
 ** Windows
 
-   #+BEGIN_SRC sh
-     virtualenv C:\virtualenvs\serial_interface
-     C:\virtualenvs\serial_interface\Scripts\activate
-     pip install serial_interface
-   #+END_SRC
+#+BEGIN_SRC sh
 
-* Development
+python3 -m venv C:\venvs\serial_interface
+C:\venvs\serial_interface\Scripts\activate
+pip install serial_interface
 
-** Build Docker Image
+#+END_SRC
 
-   #+BEGIN_SRC sh
-
-     docker stop $(docker ps -aq)
-     docker system prune -f
-     docker build -t python_package_development:latest .
-
-   #+END_SRC
-
-** Run Docker Container
-
-   #+BEGIN_SRC sh
-
-     docker run -it --device=/dev/ttyACM0 python_package_development:latest
-
-   #+END_SRC
-
-** Install This Package
-
-   #+BEGIN_SRC sh
-
-     cd python_package
-     python setup.py install
-
-   #+END_SRC
-
-** Run ipython and Test
-
-   #+BEGIN_SRC sh
-
-     ipython
-
-   #+END_SRC
-
-** Commit, Tag, and Upload to Pypi
-
-   #+BEGIN_SRC sh
-
-     # git commit ...
-     # git tag ...
-     python3 setup.py sdist bdist_wheel
-     twine upload dist/*
-     git clean -xdf
-
-   #+END_SRC
