@@ -11,7 +11,7 @@ with codecs.open(here.joinpath('DESCRIPTION.rst'), encoding='utf-8') as f:
 setuptools.setup(
     name='serial_interface',
 
-    version = '2.1.2',
+    version = '2.1.3',
 
     description='Extends serial.Serial to add methods such as auto discovery of available serial ports in Linux, Windows, and Mac OS X',
     long_description=long_description,
