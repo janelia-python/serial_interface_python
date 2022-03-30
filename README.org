@@ -4,7 +4,7 @@
 
 * Package Information
 - Name :: serial_interface_python
-- Version :: 2.1.0
+- Version :: 2.1.2
 - License :: BSD
 - URL :: https://github.com/janelia-pypi/serial_interface_python
 - Author :: Peter Polidoro
@@ -69,6 +69,20 @@ pip install serial_interface
 python3 -m venv C:\venvs\serial_interface
 C:\venvs\serial_interface\Scripts\activate
 pip install serial_interface
+
+#+END_SRC
+
+* Development
+
+** Guix
+
+#+BEGIN_SRC sh
+
+guix time-machine -C channels.scm -- shell --pure -D -f guix.scm
+python3 setup.py sdist bdist_wheel
+twine upload dist/*
+git clean -xdf
+exit
 
 #+END_SRC
 

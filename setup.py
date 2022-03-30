@@ -1,4 +1,3 @@
-
 import pathlib
 import codecs
 import setuptools
@@ -12,8 +11,7 @@ with codecs.open(here.joinpath('DESCRIPTION.rst'), encoding='utf-8') as f:
 setuptools.setup(
     name='serial_interface',
 
-    use_scm_version = True,
-    setup_requires=['setuptools_scm'],
+    version = '2.1.2',
 
     description='Extends serial.Serial to add methods such as auto discovery of available serial ports in Linux, Windows, and Mac OS X',
     long_description=long_description,

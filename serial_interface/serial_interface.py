@@ -1,4 +1,3 @@
-from __future__ import print_function, division
 import serial
 import os
 import time
