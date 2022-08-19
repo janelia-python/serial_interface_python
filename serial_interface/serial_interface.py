@@ -61,8 +61,9 @@ class SerialInterface(serial.Serial):
     _WRITE_TIMEOUT = 0.05
     _WRITE_READ_DELAY = 0.001
     _WRITE_WRITE_DELAY = 0.005
-    _OPEN_CHARS = "([{"
-    _CLOSE_CHARS = ")]}"
+    _READ_READ_DELAY = 0.001
+    _OPEN_CHARS = b"([{"
+    _CLOSE_CHARS = b")]}"
 
     def __init__(self, *args, **kwargs):
         try:
@@ -80,6 +81,10 @@ class SerialInterface(serial.Serial):
             self._write_write_delay = kwargs.pop('write_write_delay')
         except KeyError:
             self._write_write_delay = self._WRITE_WRITE_DELAY
+        try:
+            self._read_read_delay = kwargs.pop('read_read_delay')
+        except KeyError:
+            self._read_read_delay = self._READ_READ_DELAY
         try:
             self.device_name = kwargs.pop('device_name')
         except KeyError:
@@ -164,9 +169,11 @@ class SerialInterface(serial.Serial):
             try:
                 self._write_data = write_data.encode()
                 self._bytes_written = self.write(write_data.encode())
+                self._debug_print('write_data:', self._write_data)
+                self._debug_print('bytes_written:', self._bytes_written)
             except (UnicodeDecodeError):
                 self._write_data = write_data
-                self._bytes_written = self.write(write_data)
+                self._bytes_written = self.write(self._write_data)
             if self._bytes_written > 0:
                 self._time_write_prev = timer()
         except (serial.SerialTimeoutException):
@@ -200,10 +207,11 @@ class SerialInterface(serial.Serial):
             else:
                 try:
                     self._write_data = write_data.encode()
-                    self._bytes_written = self.write(write_data.encode())
                 except (UnicodeDecodeError):
                     self._write_data = write_data
-                    self._bytes_written = self.write(write_data)
+                self._bytes_written = self.write(self._write_data)
+                self._debug_print('write_data:', self._write_data)
+                self._debug_print('bytes_written:', self._bytes_written)
             if self._bytes_written > 0:
                 time.sleep(self._write_read_delay)
                 read_data = self._read_with_retry(use_readline,max_read_attempts,match_chars,size)
@@ -228,6 +236,7 @@ class SerialInterface(serial.Serial):
                 return read_data
 
             self._debug_print('no read_data -- retrying')
+            time.sleep(self._read_read_delay)
         if not read_data:
             raise ReadError("No read_data received.")
         else:

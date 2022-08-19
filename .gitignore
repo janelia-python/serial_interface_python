@@ -1,6 +1,7 @@
 # Backup files
 *.~
 *~
+*#*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -47,5 +48,3 @@ RELEASE-VERSION
 
 wheelhouse/
 venv/
-
-/#*

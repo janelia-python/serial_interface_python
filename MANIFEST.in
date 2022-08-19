@@ -1,4 +1,4 @@
-include DESCRIPTION.rst
-include README.org
+# MANIFEST.in is generated automatically from .single-source-of-truth.org
+# File edits may be overwritten!
+include README.md
 include LICENSE
-include *.scm
