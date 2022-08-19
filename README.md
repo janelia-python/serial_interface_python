@@ -6,8 +6,8 @@
 
 ```markdown
 - Name: serial_interface
-- Version: 2.2.0
-- Description: Extends serial.Serial to add methods such as auto discovery of available serial ports in Linux, Windows, and Mac OS X.
+- Version: 2.2.1
+- Description: Extends pyserial Serial to add convenience methods.
 - License: BSD 3-Clause License
 - URL: https://github.com/janelia-pypi/serial_interface_python
 - Author: Peter Polidoro
@@ -78,13 +78,6 @@ guix install python-serial-interface
 
 
 ## Windows
-
-
-### drivers
-
-Download and install Windows driver:
-
-[Loadstar Sensors Windows Driver](https://www.loadstarsensors.com/drivers-for-usb-load-cells-and-load-cell-interfaces.html)
 
 
 ### pip

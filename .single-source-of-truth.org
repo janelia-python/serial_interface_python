@@ -8,7 +8,7 @@ serial_interface
 
 #+NAME: version
 #+BEGIN_SRC text :exports none :noweb yes
-2.2.0
+2.2.1
 #+END_SRC
 
 #+NAME: repository-name
@@ -23,7 +23,7 @@ python-serial-interface
 
 #+NAME: description
 #+BEGIN_SRC text :exports none :noweb yes
-Extends serial.Serial to add methods such as auto discovery of available serial ports in Linux, Windows, and Mac OS X.
+Extends pyserial Serial to add convenience methods.
 #+END_SRC
 
 #+NAME: license
@@ -131,12 +131,6 @@ guix install <<guix-name>>
 #+END_SRC
 
 ** Windows
-
-*** drivers
-
-Download and install Windows driver:
-
-[[https://www.loadstarsensors.com/drivers-for-usb-load-cells-and-load-cell-interfaces.html][Loadstar Sensors Windows Driver]]
 
 *** pip
 

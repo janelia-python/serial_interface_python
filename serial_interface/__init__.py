@@ -1,5 +1,5 @@
 '''
-Extends serial.Serial to add methods such as auto discovery of available serial ports in Linux, Windows, and Mac OS X.
+Extends pyserial Serial to add convenience methods.
 '''
 
 # __init__.py is generated automatically from .single-source-of-truth.org
