@@ -6,7 +6,7 @@
 
 ```markdown
 - Name: serial_interface
-- Version: 2.2.1
+- Version: 2.3.0
 - Description: Extends pyserial Serial to add convenience methods.
 - License: BSD 3-Clause License
 - URL: https://github.com/janelia-pypi/serial_interface_python
@@ -19,6 +19,9 @@
 
 
 # Example Usage
+
+
+## Python
 
 ```python
 from serial_interface import SerialInterface, find_serial_interface_ports
@@ -57,6 +60,30 @@ dev.get_device_info()
 ## Linux
 
 
+### udev rules
+
+[99-platformio-udev.rules](https://docs.platformio.org/en/stable/core/installation/udev-rules.html)
+
+```sh
+# Recommended
+curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/master/scripts/99-platformio-udev.rules | sudo tee /etc/udev/rules.d/99-platformio-udev.rules
+
+# OR, manually download and copy this file to destination folder
+sudo cp 99-platformio-udev.rules /etc/udev/rules.d/99-platformio-udev.rules
+
+# Restart udev management tool
+sudo service udev restart
+
+# or
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+
+# Ubuntu/Debian users may need to add own “username” to the “dialout” group
+sudo usermod -a -G dialout $USER
+sudo usermod -a -G plugdev $USER
+```
+
+
 ### pip
 
 ```sh
@@ -87,3 +114,8 @@ python3 -m venv C:\venvs\serial_interface
 C:\venvs\serial_interface\Scripts\activate
 pip install serial_interface
 ```
+
+
+# Development
+
+[DEVELOPMENT.md](./DEVELOPMENT.md)

@@ -60,7 +60,7 @@ class SerialInterface(serial.Serial):
     _TIMEOUT = 0.05
     _WRITE_TIMEOUT = 0.05
     _WRITE_READ_DELAY = 0.001
-    _WRITE_WRITE_DELAY = 0.005
+    _WRITE_WRITE_DELAY = 0.001
     _READ_READ_DELAY = 0.001
     _OPEN_CHARS = b"([{"
     _CLOSE_CHARS = b")]}"
@@ -181,7 +181,14 @@ class SerialInterface(serial.Serial):
             self._bytes_written = 0
         return self._bytes_written
 
-    def write_read(self,write_data,use_readline=True,check_write_freq=False,max_read_attempts=100,delay_write=True,match_chars=False,size=None):
+    def write_read(self,
+                   write_data,
+                   use_readline=True,
+                   check_write_freq=False,
+                   max_read_attempts=100,
+                   delay_write=True,
+                   match_chars=False,
+                   size=None):
         '''
         A simple self.write followed by a self.readline with a
         delay set by write_read_delay when use_readline=True and

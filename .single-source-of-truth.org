@@ -8,7 +8,7 @@ serial_interface
 
 #+NAME: version
 #+BEGIN_SRC text :exports none :noweb yes
-2.2.1
+2.3.0
 #+END_SRC
 
 #+NAME: repository-name
@@ -31,6 +31,16 @@ Extends pyserial Serial to add convenience methods.
 BSD 3-Clause License
 #+END_SRC
 
+#+NAME: guix-license
+#+BEGIN_SRC text :exports none :noweb yes
+license:bsd-3
+#+END_SRC
+
+#+NAME: license-files
+#+BEGIN_SRC text :exports none :noweb yes
+LICENSE
+#+END_SRC
+
 #+NAME: url
 #+BEGIN_SRC text :exports none :noweb yes
 https://github.com/janelia-pypi/<<repository-name>>
@@ -51,9 +61,14 @@ peter@polidoro.io
 2022 Howard Hughes Medical Institute
 #+END_SRC
 
-#+NAME: dependencies
+#+NAME: python-dependencies
 #+BEGIN_SRC text :exports none :noweb yes
 pyserial
+#+END_SRC
+
+#+NAME: guix-dependencies
+#+BEGIN_SRC text :exports none :noweb yes
+python-pyserial
 #+END_SRC
 
 #+BEGIN_EXAMPLE
@@ -73,10 +88,12 @@ File edits may be overwritten! -->
 - Email: <<email>>
 - Copyright: <<copyright>>
 - Dependencies:
-  - <<dependencies>>
+  - <<python-dependencies>>
 #+END_SRC
 
 * Example Usage
+
+** Python
 
 #+BEGIN_SRC python
 from serial_interface import SerialInterface, find_serial_interface_ports
@@ -112,6 +129,30 @@ dev.get_device_info()
 
 ** Linux
 
+*** udev rules
+
+[[https://docs.platformio.org/en/stable/core/installation/udev-rules.html][99-platformio-udev.rules]]
+
+#+BEGIN_SRC sh :noweb yes
+# Recommended
+curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/master/scripts/99-platformio-udev.rules | sudo tee /etc/udev/rules.d/99-platformio-udev.rules
+
+# OR, manually download and copy this file to destination folder
+sudo cp 99-platformio-udev.rules /etc/udev/rules.d/99-platformio-udev.rules
+
+# Restart udev management tool
+sudo service udev restart
+
+# or
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+
+# Ubuntu/Debian users may need to add own “username” to the “dialout” group
+sudo usermod -a -G dialout $USER
+sudo usermod -a -G plugdev $USER
+#+END_SRC
+
+
 *** pip
 
 #+BEGIN_SRC sh :noweb yes
@@ -140,36 +181,124 @@ C:\venvs\<<name>>\Scripts\activate
 pip install <<name>>
 #+END_SRC
 
-* Development :noexport:
+* Development
 
-** Guix
+[[./DEVELOPMENT.md][DEVELOPMENT.md]]
 
-#+BEGIN_SRC sh :noweb yes
+* Development.md                                                   :noexport:
+
+#+BEGIN_SRC markdown :tangle DEVELOPMENT.md :noweb yes
+# Install Guix
+[Install Guix](https://guix.gnu.org/manual/en/html_node/Binary-Installation.html)
+
+# Clone Repository
+
+```shell
 git clone <<url>>
-cd <<repository_name>>
-make shell
+cd <<repository-name>>
+```
+
+# Edit .single-source-of-truth
+
+```shell
+make dev-shell
 make edits
-make all
+make files
 exit
+```
+
+# Test Python package using ipython shell
+
+```shell
+make ipython-shell
+import <<name>>
+exit
+```
+
+# Test installation of Guix package
+
+```shell
+make installed-shell
+exit
+```
+
+# Test command line interface
+
+```shell
+make installed-shell
+<<command-line-interface>>
+exit
+```
+
+# Upload Python package to pypi
+
+```shell
+make dev-shell
+make upload
+exit
+```
+
+# Test direct device interaction using serial terminal
+
+```shell
+make serial-shell
+[C-a][C-x] # to exit
+```
 #+END_SRC
 
 * Tangled Files                                                    :noexport:
 
-#+BEGIN_SRC text :tangle MANIFEST.in :exports none :noweb yes
-# MANIFEST.in is generated automatically from .single-source-of-truth.org
-# File edits may be overwritten!
-include README.md
-include LICENSE
+#+BEGIN_SRC scheme :tangle .guix.scm :exports none :noweb yes
+;; .guix.scm is generated automatically from .single-source-of-truth.org
+;; File edits may be overwritten!
+
+(use-modules
+ (guix packages)
+ (guix git-download)
+ (guix gexp)
+ ((guix licenses) #:prefix license:)
+ (guix build-system python)
+ (gnu packages base)
+ (gnu packages emacs)
+ (gnu packages emacs-xyz)
+ (gnu packages python-build)
+ (gnu packages python-xyz)
+ (gnu packages version-control))
+
+(define %source-dir (dirname (current-filename)))
+
+(define-public python-dev-package
+  (package
+    (name "python-dev-package")
+    (version "dev")
+    (source (local-file %source-dir
+                        #:recursive? #t
+                        #:select? (git-predicate %source-dir)))
+    (build-system python-build-system)
+    (native-inputs (list gnu-make
+                         git
+                         emacs
+                         emacs-org
+                         emacs-ox-gfm
+                         python-wheel
+                         python-twine
+                         python-ipython))
+    (propagated-inputs (list
+                        <<guix-dependencies>>))
+    (home-page "")
+    (synopsis "")
+    (description "")
+    (license <<guix-license>>)))
+
+python-dev-package
 #+END_SRC
 
 #+BEGIN_SRC text :tangle pyproject.toml :exports none :noweb yes
 # pyproject.toml is generated automatically from .single-source-of-truth.org
 # File edits may be overwritten!
 [build-system]
-requires = [
-    "setuptools>=42",
-    "wheel"
-]
+requires = ["setuptools"]
+build-backed = "setuptools.build_meta"
 #+END_SRC
 
 #+BEGIN_SRC text :tangle setup.cfg :exports none :noweb yes
@@ -191,23 +320,11 @@ classifiers =
 [options]
 packages = find:
 install_requires =
-    <<dependencies>>
-
-[options.packages.find]
-exclude =
-    examples*
-    tools*
-    docs*
-    <<name>>.tests*
-
-[bdist_wheel]
-# This flag says that the code is written to work on both Python 2 and Python
-# 3. If at all possible, it is good practice to do this. If you cannot, you
-# will need to generate wheels for each Python version that you support.
-universal=1
+    <<python-dependencies>>
 #+END_SRC
 
 #+BEGIN_SRC python :tangle setup.py :exports none :noweb yes
+
 # setup.py is generated automatically from .single-source-of-truth.org
 # File edits may be overwritten!
 from setuptools import setup
@@ -248,3 +365,4 @@ from serial_interface.__about__ import (
 
 from .serial_interface import SerialInterface, SerialInterfaces, find_serial_interface_ports, find_serial_interface_port, WriteFrequencyError, WriteError, ReadError, __version__
 #+END_SRC
+

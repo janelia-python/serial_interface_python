@@ -1,3 +1,6 @@
+;; .guix.scm is generated automatically from .single-source-of-truth.org
+;; File edits may be overwritten!
+
 (use-modules
  (guix packages)
  (guix git-download)
@@ -9,8 +12,7 @@
  (gnu packages emacs-xyz)
  (gnu packages python-build)
  (gnu packages python-xyz)
- (gnu packages version-control)
- (guix-janelia packages python-janelia))
+ (gnu packages version-control))
 
 (define %source-dir (dirname (current-filename)))
 
@@ -30,10 +32,11 @@
                          python-wheel
                          python-twine
                          python-ipython))
-    (propagated-inputs (list python-serial-interface))
+    (propagated-inputs (list
+                        python-pyserial))
     (home-page "")
     (synopsis "")
     (description "")
-    (license license:gpl3+)))
+    (license license:bsd-3)))
 
 python-dev-package
