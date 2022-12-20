@@ -55,6 +55,7 @@ nil
 #+BEGIN_SRC text :exports none :noweb yes
 https://pyserial.readthedocs.io
 https://pyserial-asyncio.readthedocs.io
+https://docs.python.org/3.9/library/asyncio.html
 #+END_SRC
 
 #+NAME: creation-date
