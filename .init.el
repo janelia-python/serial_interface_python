@@ -1,3 +1,5 @@
+;; This file is generated automatically from .metadata.org
+;; File edits may be overwritten!
 (require 'org)
 
 (eval-after-load "org"

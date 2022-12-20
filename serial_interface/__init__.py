@@ -1,8 +1,5 @@
-'''
-Extends pyserial Serial to add convenience methods.
-'''
-
-# __init__.py is generated automatically from .single-source-of-truth.org
+"""Extends pyserial and pyserial-asyncio to make serial device interfaces."""
+# This file is generated automatically from .metadata.org
 # File edits may be overwritten!
 from serial_interface.__about__ import (
     __author__,
@@ -11,7 +8,6 @@ from serial_interface.__about__ import (
     __license__,
     __description__,
     __url__,
-    __version__,
-)
+    __version__)
 
 from .serial_interface import SerialInterface, SerialInterfaces, find_serial_interface_ports, find_serial_interface_port, WriteFrequencyError, WriteError, ReadError, __version__

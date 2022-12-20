@@ -1,22 +1,37 @@
-<!-- README.md is generated automatically from .single-source-of-truth.org
-    File edits may be overwritten! -->
+- [About](#org3fc001f)
+- [Example Usage](#orgc9adc92)
+- [Installation](#orgb3ef6d1)
+- [Development](#org23c55c9)
 
+    <!-- This file is generated automatically from .metadata.org -->
+    <!-- File edits may be overwritten! -->
+
+
+<a id="org3fc001f"></a>
 
 # About
 
 ```markdown
 - Name: serial_interface
-- Version: 2.3.0
-- Description: Extends pyserial Serial to add convenience methods.
-- License: BSD 3-Clause License
+- Description: Extends pyserial and pyserial-asyncio to make serial device interfaces.
+- Version: 3.0.0
+- Release Date: 2022-12-20
+- Creation Date: 2018-01-11
+- License: BSD-3-Clause
 - URL: https://github.com/janelia-pypi/serial_interface_python
 - Author: Peter Polidoro
 - Email: peter@polidoro.io
 - Copyright: 2022 Howard Hughes Medical Institute
+- References:
+  - https://pyserial.readthedocs.io
+  - https://pyserial-asyncio.readthedocs.io
 - Dependencies:
   - pyserial
+  - pyserial-asyncio
 ```
 
+
+<a id="orgc9adc92"></a>
 
 # Example Usage
 
@@ -52,70 +67,171 @@ dev.get_device_info()
 ```
 
 
+## Command Line
+
+```sh
+
+```
+
+
+<a id="orgb3ef6d1"></a>
+
 # Installation
 
 <https://github.com/janelia-pypi/python_setup>
 
 
-## Linux
+## GNU/Linux
 
 
-### udev rules
+### Drivers
+
+GNU/Linux computers usually have all of the necessary drivers already installed, but users need the appropriate permissions to open the device and communicate with it.
+
+Udev is the GNU/Linux subsystem that detects when things are plugged into your computer.
+
+Udev may be used to detect when a serial device is plugged into the computer and automatically give permission to open that device.
+
+If you plug a sensor into your computer and attempt to open it and get an error such as: "FATAL: cannot open /dev/ttyUSB0: Permission denied", then you need to install udev rules to give permission to open that device.
+
+Udev rules may be downloaded as a file and placed in the appropriate directory using these instructions:
 
 [99-platformio-udev.rules](https://docs.platformio.org/en/stable/core/installation/udev-rules.html)
 
-```sh
-# Recommended
-curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/master/scripts/99-platformio-udev.rules | sudo tee /etc/udev/rules.d/99-platformio-udev.rules
+1.  Download rules into the correct directory
 
-# OR, manually download and copy this file to destination folder
-sudo cp 99-platformio-udev.rules /etc/udev/rules.d/99-platformio-udev.rules
+    ```sh
+    curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/master/scripts/99-platformio-udev.rules | sudo tee /etc/udev/rules.d/99-platformio-udev.rules
+    ```
 
-# Restart udev management tool
-sudo service udev restart
+2.  Restart udev management tool
 
-# or
-sudo udevadm control --reload-rules
-sudo udevadm trigger
+    ```sh
+    sudo service udev restart
+    ```
 
-# Ubuntu/Debian users may need to add own “username” to the “dialout” group
-sudo usermod -a -G dialout $USER
-sudo usermod -a -G plugdev $USER
-```
+3.  Ubuntu/Debian users may need to add own “username” to the “dialout” group
 
+    ```sh
+    sudo usermod -a -G dialout $USER
+    sudo usermod -a -G plugdev $USER
+    ```
 
-### pip
+4.  After setting up rules and groups
 
-```sh
-python3 -m venv ~/venvs/serial_interface
-source ~/venvs/serial_interface/bin/activate
-pip install serial_interface
-```
+    You will need to log out and log back in again (or reboot) for the user group changes to take effect.
+    
+    After this file is installed, physically unplug and reconnect your board.
 
 
-### guix
+### Python Code
 
-Setup guix-janelia channel:
+The Python code in this library may be installed in any number of ways, chose one.
 
-<https://github.com/guix-janelia/guix-janelia>
+1.  pip
 
-```sh
-guix install python-serial-interface
-```
+    ```sh
+    python3 -m venv ~/venvs/serial_interface
+    source ~/venvs/serial_interface/bin/activate
+    pip install serial_interface
+    ```
+
+2.  guix
+
+    Setup guix-janelia channel:
+    
+    <https://github.com/guix-janelia/guix-janelia>
+    
+    ```sh
+    guix install python-serial-interface
+    ```
 
 
 ## Windows
 
 
-### pip
+### Drivers
 
-```sh
-python3 -m venv C:\venvs\serial_interface
-C:\venvs\serial_interface\Scripts\activate
-pip install serial_interface
-```
+Download and install driver for the specific serial device.
 
+
+### Python Code
+
+The Python code in this library may be installed in any number of ways, chose one.
+
+1.  pip
+
+    ```sh
+    python3 -m venv C:\venvs\serial_interface
+    C:\venvs\serial_interface\Scripts\activate
+    pip install serial_interface
+    ```
+
+
+<a id="org23c55c9"></a>
 
 # Development
 
-[DEVELOPMENT.md](./DEVELOPMENT.md)
+
+## Install Guix
+
+[Install Guix](https://guix.gnu.org/manual/en/html_node/Binary-Installation.html)
+
+
+## Clone Repository
+
+```sh
+git clone https://github.com/janelia-pypi/serial_interface_python
+cd serial_interface_python
+```
+
+
+## Edit .metadata.org
+
+```sh
+make metadata-edits
+```
+
+
+## Tangle .metadata.org
+
+```sh
+make metadata
+```
+
+
+## Test Python package using ipython shell
+
+```sh
+make ipython-shell # PORT=/dev/ttyUSB0
+# make PORT=/dev/ttyUSB1 ipython-shell
+import serial_interface
+exit
+```
+
+
+## Test installation of Guix package
+
+```sh
+make installed-shell # PORT=/dev/ttyUSB0
+# make PORT=/dev/ttyUSB1 installed-shell
+exit
+```
+
+
+## Upload Python package to pypi
+
+```sh
+make upload
+```
+
+
+## Test direct device interaction using serial terminal
+
+```sh
+make serial-shell # PORT=/dev/ttyUSB0
+# make PORT=/dev/ttyUSB1 serial-shell
+? # help
+settings
+[C-a][C-x] # to exit
+```

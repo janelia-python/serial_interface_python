@@ -1,0 +1,26 @@
+{
+    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+    "@type": "SoftwareSourceCode",
+    "license": "https://spdx.org/licenses/BSD-3-Clause",
+    "codeRepository": "git+https://github.com/janelia-pypi/serial_interface_python.git",
+    "dateCreated": "2018-01-11",
+    "dateModified": "2022-12-20",
+    "name": "serial_interface",
+    "version": "3.0.0",
+    "description": "Extends pyserial and pyserial-asyncio to make serial device interfaces.",
+    "programmingLanguage": [
+        "Python 3"
+    ],
+    "author": [
+        {
+            "@type": "Person",
+            "givenName": "Peter",
+            "familyName": "Polidoro",
+            "email": "peter@polidoro.io",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "Howard Hughes Medical Institute"
+            }
+        }
+    ]
+}

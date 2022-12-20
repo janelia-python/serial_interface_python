@@ -1,31 +1,65 @@
-dev-shell:
-	guix time-machine -C .channels.scm -- shell --pure -D -f .guix.scm
+# This file is generated automatically from .metadata.org
+# File edits may be overwritten!
 
+.PHONY: upload
+upload: metadata package twine add clean
+
+GUIX-SHELL = guix time-machine -C .channels.scm -- shell
+GUIX-CONTAINER = $(GUIX-SHELL) --container
+PORT = /dev/ttyUSB0
+GUIX-CONTAINER-EXPOSED = $(GUIX-CONTAINER) --expose=$(PORT)
+DEVELOPMENT = -D -f .guix.scm
+GUIX-CONTAINER-DEVELOPMENT = $(GUIX-CONTAINER) $(DEVELOPMENT)
+GUIX-CONTAINER-GUI = $(GUIXCONTAINER-DEVELOPMENT) --preserve='^DISPLAY$$' --preserve='^TERM$$'
+
+.PHONY: shell
+shell:
+	$(GUIX-SHELL)
+
+.PHONY: container
+container:
+	$(GUIX-CONTAINER)
+
+.PHONY: exposed-container
+exposed-container:
+	$(GUIX-CONTAINER-EXPOSED)
+
+.PHONY: dev-container
+dev-container:
+	$(GUIX-CONTAINER-EXPOSED) $(DEVELOPMENT)
+
+.PHONY: ipython-shell
 ipython-shell:
-	guix time-machine -C .channels.scm -- shell --pure -D -f .guix.scm -- ipython
+	$(GUIX-CONTAINER-EXPOSED) $(DEVELOPMENT) -- ipython
 
+.PHONY: serial-shell
 serial-shell:
-	guix shell picocom -- picocom -b 9600 -f n -y n -d 8 -p 1 -c /dev/ttyUSB0
+	$(GUIX-CONTAINER-EXPOSED) picocom -- picocom -b 9600 -f n -y n -d 8 -p 1 -c $(PORT)
 
+.PHONY: installed-shell
 installed-shell:
-	guix time-machine -C .channels.scm -- shell --pure -f .guix.scm --rebuild-cache
+	$(GUIX-CONTAINER-EXPOSED) -f .guix.scm --rebuild-cache
 
-upload: files package twine add clean
+.PHONY: metadata-edits
+metadata-edits:
+	$(GUIX-CONTAINER-GUI) -- sh -c "emacs -q --no-site-file --no-site-lisp --no-splash -l .init.el --file .metadata.org"
 
-edits:
-	emacs -q --no-site-file --no-site-lisp --no-splash -l .emacs --file .single-source-of-truth.org
+.PHONY: metadata
+metadata:
+	$(GUIX-CONTAINER-DEVELOPMENT) -- sh -c "emacs --batch -Q  -l .init.el --eval '(process-org \".metadata.org\")'"
 
-files:
-	emacs --batch -Q  -l .emacs --eval '(process-org ".single-source-of-truth.org")'
-
+.PHONY: package
 package:
-	python3 setup.py sdist bdist_wheel
+	$(GUIX-CONTAINER-DEVELOPMENT) -- sh -c "python3 setup.py sdist bdist_wheel"
 
+.PHONY: twine
 twine:
-	twine upload dist/*
+	$(GUIX-CONTAINER-DEVELOPMENT) -- sh -c "twine upload dist/*"
 
+.PHONY: add
 add:
-	git add --all
+	$(GUIX-CONTAINER-DEVELOPMENT) -- sh -c "git add --all"
 
+.PHONY: clean
 clean:
-	git clean -xdf
+	$(GUIX-CONTAINER-DEVELOPMENT) -- sh -c "git clean -xdf"

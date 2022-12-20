@@ -1,4 +1,5 @@
-# setup.py is generated automatically from .single-source-of-truth.org
+"""Extends pyserial and pyserial-asyncio to make serial device interfaces."""
+# This file is generated automatically from .metadata.org
 # File edits may be overwritten!
 from setuptools import setup
 
