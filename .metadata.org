@@ -26,24 +26,22 @@ python-serial-interface
 
 #+NAME: version
 #+BEGIN_SRC text :exports none :noweb yes
-3.0.0
+2.3.1
 #+END_SRC
 
 #+NAME: description
 #+BEGIN_SRC text :exports none :noweb yes
-Extends pyserial and pyserial-asyncio to make serial device interfaces.
+Extends pyserial to make serial device interfaces.
 #+END_SRC
 
 #+NAME: python-dependencies
 #+BEGIN_SRC text :exports none :noweb yes
 pyserial
-pyserial-asyncio
 #+END_SRC
 
 #+NAME: guix-dependencies
 #+BEGIN_SRC text :exports none :noweb yes
 python-pyserial
-python-pyserial-asyncio
 #+END_SRC
 
 #+NAME: command-line-interface
@@ -54,8 +52,6 @@ nil
 #+NAME: references
 #+BEGIN_SRC text :exports none :noweb yes
 https://pyserial.readthedocs.io
-https://pyserial-asyncio.readthedocs.io
-https://docs.python.org/3.9/library/asyncio.html
 #+END_SRC
 
 #+NAME: creation-date

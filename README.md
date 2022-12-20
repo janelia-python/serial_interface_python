@@ -1,20 +1,20 @@
-- [About](#org3fc001f)
-- [Example Usage](#orgc9adc92)
-- [Installation](#orgb3ef6d1)
-- [Development](#org23c55c9)
+- [About](#org70b5fcb)
+- [Example Usage](#org13da829)
+- [Installation](#orgdb6ce47)
+- [Development](#org83aad87)
 
     <!-- This file is generated automatically from .metadata.org -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="org3fc001f"></a>
+<a id="org70b5fcb"></a>
 
 # About
 
 ```markdown
 - Name: serial_interface
-- Description: Extends pyserial and pyserial-asyncio to make serial device interfaces.
-- Version: 3.0.0
+- Description: Extends pyserial to make serial device interfaces.
+- Version: 2.3.1
 - Release Date: 2022-12-20
 - Creation Date: 2018-01-11
 - License: BSD-3-Clause
@@ -24,14 +24,12 @@
 - Copyright: 2022 Howard Hughes Medical Institute
 - References:
   - https://pyserial.readthedocs.io
-  - https://pyserial-asyncio.readthedocs.io
 - Dependencies:
   - pyserial
-  - pyserial-asyncio
 ```
 
 
-<a id="orgc9adc92"></a>
+<a id="org13da829"></a>
 
 # Example Usage
 
@@ -74,7 +72,7 @@ dev.get_device_info()
 ```
 
 
-<a id="orgb3ef6d1"></a>
+<a id="orgdb6ce47"></a>
 
 # Installation
 
@@ -168,7 +166,7 @@ The Python code in this library may be installed in any number of ways, chose on
     ```
 
 
-<a id="org23c55c9"></a>
+<a id="org83aad87"></a>
 
 # Development
 
