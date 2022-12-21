@@ -1,13 +1,13 @@
-- [About](#org70b5fcb)
-- [Example Usage](#org13da829)
-- [Installation](#orgdb6ce47)
-- [Development](#org83aad87)
+- [About](#org764f462)
+- [Example Usage](#orgc15df8a)
+- [Installation](#orgbd91757)
+- [Development](#org2a2493c)
 
     <!-- This file is generated automatically from .metadata.org -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="org70b5fcb"></a>
+<a id="org764f462"></a>
 
 # About
 
@@ -15,7 +15,7 @@
 - Name: serial_interface
 - Description: Extends pyserial to make serial device interfaces.
 - Version: 2.3.1
-- Release Date: 2022-12-20
+- Release Date: 2022-12-21
 - Creation Date: 2018-01-11
 - License: BSD-3-Clause
 - URL: https://github.com/janelia-pypi/serial_interface_python
@@ -29,7 +29,7 @@
 ```
 
 
-<a id="org13da829"></a>
+<a id="orgc15df8a"></a>
 
 # Example Usage
 
@@ -72,7 +72,7 @@ dev.get_device_info()
 ```
 
 
-<a id="orgdb6ce47"></a>
+<a id="orgbd91757"></a>
 
 # Installation
 
@@ -166,7 +166,7 @@ The Python code in this library may be installed in any number of ways, chose on
     ```
 
 
-<a id="org83aad87"></a>
+<a id="org2a2493c"></a>
 
 # Development
 
