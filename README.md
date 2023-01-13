@@ -1,13 +1,13 @@
-- [About](#org5ea5fe3)
-- [Example Usage](#org1288aca)
-- [Installation](#orgbe7ce34)
-- [Development](#org011b7e9)
+- [About](#org0a0574e)
+- [Example Usage](#orgc971ee1)
+- [Installation](#orgef3b439)
+- [Development](#org6a4c0aa)
 
     <!-- This file is generated automatically from metadata.org -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="org5ea5fe3"></a>
+<a id="org0a0574e"></a>
 
 # About
 
@@ -30,7 +30,7 @@
 ```
 
 
-<a id="org1288aca"></a>
+<a id="orgc971ee1"></a>
 
 # Example Usage
 
@@ -73,7 +73,7 @@ dev.get_device_info()
 ```
 
 
-<a id="orgbe7ce34"></a>
+<a id="orgef3b439"></a>
 
 # Installation
 
@@ -167,7 +167,7 @@ The Python code in this library may be installed in any number of ways, chose on
     ```
 
 
-<a id="org011b7e9"></a>
+<a id="org6a4c0aa"></a>
 
 # Development
 
@@ -185,17 +185,24 @@ cd serial_interface_python
 ```
 
 
+## Make alias
+
+```sh
+alias ,make=make\ -f\ .metadata-python/Makefile
+```
+
+
 ## Edit metadata.org
 
 ```sh
-make metadata-edits
+,make metadata-edits
 ```
 
 
 ## Tangle metadata.org
 
 ```sh
-make metadata
+,make metadata
 ```
 
 
