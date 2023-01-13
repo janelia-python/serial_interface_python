@@ -1,13 +1,13 @@
-- [About](#org0a0574e)
-- [Example Usage](#orgc971ee1)
-- [Installation](#orgef3b439)
-- [Development](#org6a4c0aa)
+- [About](#org5a2fe5b)
+- [Example Usage](#orgdf44a63)
+- [Installation](#org6691306)
+- [Development](#org62b7ef6)
 
     <!-- This file is generated automatically from metadata.org -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="org0a0574e"></a>
+<a id="org5a2fe5b"></a>
 
 # About
 
@@ -30,7 +30,7 @@
 ```
 
 
-<a id="orgc971ee1"></a>
+<a id="orgdf44a63"></a>
 
 # Example Usage
 
@@ -73,7 +73,7 @@ dev.get_device_info()
 ```
 
 
-<a id="orgef3b439"></a>
+<a id="org6691306"></a>
 
 # Installation
 
@@ -167,7 +167,7 @@ The Python code in this library may be installed in any number of ways, chose on
     ```
 
 
-<a id="org6a4c0aa"></a>
+<a id="org62b7ef6"></a>
 
 # Development
 
@@ -188,7 +188,7 @@ cd serial_interface_python
 ## Make alias
 
 ```sh
-alias ,make=make\ -f\ .metadata-python/Makefile
+source .metadata-python/.alias
 ```
 
 
@@ -209,8 +209,8 @@ alias ,make=make\ -f\ .metadata-python/Makefile
 ## Test Python package using ipython shell
 
 ```sh
-make ipython-shell # PORT=/dev/ttyUSB0
-# make PORT=/dev/ttyUSB1 ipython-shell
+,make ipython-shell # PORT=/dev/ttyUSB0
+# ,make PORT=/dev/ttyUSB1 ipython-shell
 import serial_interface
 exit
 ```
@@ -219,8 +219,8 @@ exit
 ## Test installation of Guix package
 
 ```sh
-make installed-shell # PORT=/dev/ttyUSB0
-# make PORT=/dev/ttyUSB1 installed-shell
+,make installed-shell # PORT=/dev/ttyUSB0
+# ,make PORT=/dev/ttyUSB1 installed-shell
 exit
 ```
 
@@ -228,15 +228,15 @@ exit
 ## Upload Python package to pypi
 
 ```sh
-make upload
+,make upload
 ```
 
 
 ## Test direct device interaction using serial terminal
 
 ```sh
-make serial-shell # PORT=/dev/ttyUSB0
-# make PORT=/dev/ttyUSB1 serial-shell
+,make serial-shell # PORT=/dev/ttyUSB0
+# ,make PORT=/dev/ttyUSB1 serial-shell
 ? # help
 settings
 [C-a][C-x] # to exit

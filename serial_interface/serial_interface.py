@@ -1,8 +1,9 @@
 import asyncio
 import serial_asyncio
+from serial.tools.list_ports import comports
+
 import os
 from timeit import default_timer as timer
-import platform
 import atexit
 import operator
 import threading
@@ -42,11 +43,10 @@ class ReadError(Exception):
     def __str__(self):
         return repr(self.value)
 
-class SerialInterface(serial.Serial):
-    '''
-    SerialInterface inherits from serial.Serial and adds methods to it,
-    like auto discovery of available serial ports in Linux, Windows, and
-    Mac OS X.
+class SerialInterface:
+    '''SerialInterface adds methods to pyserial-asyncio reader and writer
+    streams, like auto discovery of available serial ports in Linux, Windows,
+    and Mac OS X.
 
     Example Usage:
 
@@ -56,6 +56,7 @@ class SerialInterface(serial.Serial):
     dev = SerialInterface(port='/dev/tty.usbmodem262471') # Mac OS X
     dev = SerialInterface(port='COM3') # Windows
     dev.get_device_info()
+
     '''
     _TIMEOUT = 0.05
     _WRITE_TIMEOUT = 0.05
@@ -65,7 +66,7 @@ class SerialInterface(serial.Serial):
     _OPEN_CHARS = b"([{"
     _CLOSE_CHARS = b")]}"
 
-    def __init__(self, *args, **kwargs):
+    async def __init__(self, *args, **kwargs):
         try:
             self.debug = kwargs.pop('debug')
         except KeyError:
@@ -91,13 +92,16 @@ class SerialInterface(serial.Serial):
             self.device_name = ''
 
         if ('port' not in kwargs) or (kwargs['port'] is None):
-            kwargs.update({'port': find_serial_interface_port(try_ports=try_ports,debug=self.debug)})
+            port = find_serial_interface_port(try_ports=try_ports,debug=self.debug)
+        else:
+            port = kwargs.pop('port')
+
         if 'timeout' not in kwargs:
             kwargs.update({'timeout': self._TIMEOUT})
         if 'write_timeout' not in kwargs:
             kwargs.update({'write_timeout': self._WRITE_TIMEOUT})
 
-        super(SerialInterface,self).__init__(*args,**kwargs)
+        self._reader, self._writer = await serial_asyncio.open_serial_connection(url=port,*args,**kwargs)
         atexit.register(self._exit_serial_interface)
 
         # save write_data so it can be used for debugging
@@ -123,7 +127,7 @@ class SerialInterface(serial.Serial):
         if self.debug:
             print(*args)
 
-    def write_check_freq(self,write_data,delay_write=False,lock_=True):
+    async def write_check_freq(self,write_data,delay_write=False,lock_=True):
         '''
         Use instead of self.write when you want to ensure that
         serial write commands do not happen too
@@ -138,7 +142,7 @@ class SerialInterface(serial.Serial):
         if time_since_write_prev < self._write_write_delay:
             delay_time_needed = self._write_write_delay - time_since_write_prev
             if delay_write:
-                time.sleep(delay_time_needed)
+                await asyncio.sleep(delay_time_needed)
             else:
                 raise WriteFrequencyError("Time between writes needs to be > {0}s".format(self._write_write_delay))
         bytes_written = 0
@@ -181,7 +185,7 @@ class SerialInterface(serial.Serial):
             self._bytes_written = 0
         return self._bytes_written
 
-    def write_read(self,
+    async def write_read(self,
                    write_data,
                    use_readline=True,
                    check_write_freq=False,
@@ -220,7 +224,7 @@ class SerialInterface(serial.Serial):
                 self._debug_print('write_data:', self._write_data)
                 self._debug_print('bytes_written:', self._bytes_written)
             if self._bytes_written > 0:
-                time.sleep(self._write_read_delay)
+                await asyncio.sleep(self._write_read_delay)
                 read_data = self._read_with_retry(use_readline,max_read_attempts,match_chars,size)
                 self._debug_print('read_data:', read_data)
             else:
@@ -230,7 +234,7 @@ class SerialInterface(serial.Serial):
             self._lock.release()
         return read_data
 
-    def _read_with_retry(self,use_readline,max_read_attempts,match_chars,size):
+    async def _read_with_retry(self,use_readline,max_read_attempts,match_chars,size):
         '''
         Reads data from the device.  If there is no data, try
         reading again.
@@ -243,7 +247,7 @@ class SerialInterface(serial.Serial):
                 return read_data
 
             self._debug_print('no read_data -- retrying')
-            time.sleep(self._read_read_delay)
+            await asyncio.sleep(self._read_read_delay)
         if not read_data:
             raise ReadError("No read_data received.")
         else:
@@ -294,7 +298,7 @@ class SerialInterface(serial.Serial):
         }
         return serial_interface_info
 
-    def check_write_freq(self,write_period_desired,write_data,delay_write=False):
+    async def check_write_freq(self,write_period_desired,write_data,delay_write=False):
         cycle_count = 100
         time_start = timer()
         time_prev = timer()
@@ -302,13 +306,13 @@ class SerialInterface(serial.Serial):
             self.write_check_freq(write_data,delay_write)
             sleep_duration = write_period_desired - (timer() - time_prev)
             if sleep_duration > 0:
-                time.sleep(sleep_duration)
+                await asyncio.sleep(sleep_duration)
             time_prev = timer()
         time_stop = timer()
         write_period_actual = (time_stop - time_start)/cycle_count
         print('desired write period: {0}, actual write period: {1}'.format(write_period_desired,write_period_actual))
 
-    def check_write_read_freq(self,write_period_desired,write_data,use_readline=True,check_write_freq=False,max_read_attempts=100,delay_write=True,match_chars=False):
+    async def check_write_read_freq(self,write_period_desired,write_data,use_readline=True,check_write_freq=False,max_read_attempts=100,delay_write=True,match_chars=False):
         cycle_count = 100
         time_start = timer()
         time_prev = timer()
@@ -317,7 +321,7 @@ class SerialInterface(serial.Serial):
             read_data = self.write_read(write_data,use_readline,check_write_freq,max_read_attempts,delay_write,match_chars)
             sleep_duration = write_period_desired - (timer() - time_prev)
             if sleep_duration > 0:
-                time.sleep(sleep_duration)
+                await asyncio.sleep(sleep_duration)
             time_prev = timer()
         time_stop = timer()
         write_period_actual = (time_stop - time_start)/cycle_count
@@ -445,38 +449,7 @@ def find_serial_interface_ports(try_ports=None, debug=DEBUG):
     Mac OS X: /dev/tty.* or /dev/cu.*
     Windows: COM*
     '''
-    serial_interface_ports = []
-    os_type = platform.system()
-    if os_type == 'Linux':
-        serial_interface_ports = os.listdir('{0}dev'.format(os.path.sep))
-        serial_interface_ports = [x for x in serial_interface_ports if 'ttyUSB' in x or 'ttyACM' in x or 'arduino' in x]
-        serial_interface_ports = ['{0}dev{0}{1}'.format(os.path.sep,x) for x in serial_interface_ports]
-    elif os_type == 'Windows':
-        try:
-            import winreg
-        except ImportError:
-            import _winreg as winreg
-        import itertools
-
-        path = 'HARDWARE\\DEVICEMAP\\SERIALCOMM'
-        try:
-            key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, path)
-        except WindowsError:
-            key = None
-
-        if key is not None:
-            for i in itertools.count():
-                try:
-                    val = winreg.EnumValue(key, i)
-                    # Only return USBSER devices
-                    if 'USBSER' in val[0]:
-                        serial_interface_ports.append(str(val[1]))
-                except EnvironmentError:
-                    break
-    elif os_type == 'Darwin':
-        serial_interface_ports = os.listdir('{0}dev'.format(os.path.sep))
-        serial_interface_ports = [x for x in serial_interface_ports if 'tty.' in x or 'cu.' in x]
-        serial_interface_ports = ['{0}dev{0}{1}'.format(os.path.sep,x) for x in serial_interface_ports]
+    serial_interface_ports = [comport.device for comport in comports()]
 
     if try_ports is not None:
         serial_interface_ports = list(set(try_ports) & set(serial_interface_ports))

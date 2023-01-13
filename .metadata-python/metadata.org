@@ -311,7 +311,7 @@ cd <<repository-name>>
 ** Make alias
 
 #+BEGIN_SRC sh :noweb yes
-source .alias
+source .metadata-python/.alias
 #+END_SRC
 
 ** Edit metadata.org
@@ -501,7 +501,7 @@ serial-shell:
 
 .PHONY: installed-shell
 installed-shell:
-	$(GUIX-CONTAINER) --rebuild-cache
+	$(GUIX-CONTAINER) python-ipython --rebuild-cache
 
 .PHONY: metadata-edits
 metadata-edits:

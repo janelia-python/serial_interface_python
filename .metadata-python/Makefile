@@ -28,7 +28,7 @@ serial-shell:
 
 .PHONY: installed-shell
 installed-shell:
-	$(GUIX-CONTAINER) --rebuild-cache
+	$(GUIX-CONTAINER) python-ipython --rebuild-cache
 
 .PHONY: metadata-edits
 metadata-edits:
