@@ -1,6 +1,6 @@
-import serial
+import asyncio
+import serial_asyncio
 import os
-import time
 from timeit import default_timer as timer
 import platform
 import atexit
