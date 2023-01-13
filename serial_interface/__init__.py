@@ -1,5 +1,5 @@
 """Extends pyserial to make serial device interfaces."""
-# This file is generated automatically from .metadata.org
+# This file is generated automatically from metadata.org
 # File edits may be overwritten!
 from serial_interface.__about__ import (
     __author__,

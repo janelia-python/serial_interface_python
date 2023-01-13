@@ -1,11 +1,11 @@
-;; This file is generated automatically from .metadata.org
+;; This file is generated automatically from metadata.org
 ;; File edits may be overwritten!
 (list (channel
         (name 'guix)
         (url "https://git.savannah.gnu.org/git/guix.git")
         (branch "master")
         (commit
-          "fcc4e51e61d1982765a4e86c95fbc9a8179e21f3")
+          "eb329c946181557f3dd63195d4938592ef9f4f98")
         (introduction
           (make-channel-introduction
             "9edb3f66fd807b096b48283debdcddccfea34bad"

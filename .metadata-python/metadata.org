@@ -1,9 +1,9 @@
-#+EXPORT_FILE_NAME: README.md
+#+EXPORT_FILE_NAME: ../README.md
 #+OPTIONS: toc:1 |:t ^:nil tags:nil
 
 # Place warning at the top of the exported file
 #+BEGIN_EXAMPLE
-<!-- This file is generated automatically from .metadata.org -->
+<!-- This file is generated automatically from metadata.org -->
 <!-- File edits may be overwritten! -->
 #+END_EXAMPLE
 
@@ -51,7 +51,7 @@ nil
 
 #+NAME: references
 #+BEGIN_SRC text :exports none :noweb yes
-https://pyserial.readthedocs.io
+https://pyserial.readthedocs.io/en/latest/
 #+END_SRC
 
 #+NAME: creation-date
@@ -307,13 +307,13 @@ git clone <<repository-url>>
 cd <<repository-name>>
 #+END_SRC
 
-** Edit .metadata.org
+** Edit metadata.org
 
 #+BEGIN_SRC sh :noweb yes
 make metadata-edits
 #+END_SRC
 
-** Tangle .metadata.org
+** Tangle metadata.org
 
 #+BEGIN_SRC sh :noweb yes
 make metadata
@@ -354,11 +354,11 @@ settings
 
 * Tangled Files                                                    :noexport:
 
-#+BEGIN_SRC text :tangle AUTHORS :exports none :noweb yes
+#+BEGIN_SRC text :tangle ../AUTHORS :exports none :noweb yes
 <<author>>
 #+END_SRC
 
-#+BEGIN_SRC js :tangle codemeta.json :exports none :noweb yes
+#+BEGIN_SRC js :tangle ../codemeta.json :exports none :noweb yes
 {
     "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
     "@type": "SoftwareSourceCode",
@@ -387,15 +387,15 @@ settings
 }
 #+END_SRC
 
-#+BEGIN_SRC scheme :tangle .channels.scm :exports none :noweb yes
-;; This file is generated automatically from .metadata.org
+#+BEGIN_SRC scheme :tangle guix/channels.scm :exports none :noweb yes
+;; This file is generated automatically from metadata.org
 ;; File edits may be overwritten!
 (list (channel
         (name 'guix)
         (url "https://git.savannah.gnu.org/git/guix.git")
         (branch "master")
         (commit
-          "fcc4e51e61d1982765a4e86c95fbc9a8179e21f3")
+          "eb329c946181557f3dd63195d4938592ef9f4f98")
         (introduction
           (make-channel-introduction
             "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -409,8 +409,8 @@ settings
           "a082913f2dcfd0aa7d1922e780880505aaf3e2d9")))
 #+END_SRC
 
-#+BEGIN_SRC scheme :tangle .guix.scm :exports none :noweb yes
-;; This file is generated automatically from .metadata.org
+#+BEGIN_SRC scheme :tangle guix/guix.scm :exports none :noweb yes
+;; This file is generated automatically from metadata.org
 ;; File edits may be overwritten!
 (use-modules
  (guix packages)
@@ -428,7 +428,7 @@ settings
  (guix-janelia packages python-janelia)
  (guix-janelia packages python-xyz))
 
-(define %source-dir (dirname (current-filename)))
+(define %source-dir (dirname (dirname (dirname (current-filename)))))
 
 (define-public python-dev-package
   (package
@@ -458,75 +458,59 @@ python-dev-package
 #+END_SRC
 
 #+BEGIN_SRC text :tangle Makefile :exports none :noweb yes
-# This file is generated automatically from .metadata.org
+# This file is generated automatically from metadata.org
 # File edits may be overwritten!
 
 .PHONY: upload
 upload: metadata package twine add clean
 
-GUIX-SHELL = guix time-machine -C .channels.scm -- shell
-GUIX-CONTAINER = $(GUIX-SHELL) --container
-PORT = /dev/ttyUSB0
-GUIX-CONTAINER-PORT = $(GUIX-CONTAINER) --expose=$(PORT)
-DEVELOPMENT = -D -f .guix.scm
-GUIX-CONTAINER-DEVELOPMENT = $(GUIX-CONTAINER) $(DEVELOPMENT)
-GUIX-CONTAINER-GUI = $(GUIXCONTAINER-DEVELOPMENT) --preserve='^DISPLAY$$' --preserve='^TERM$$'
+GUIX-SHELL = guix time-machine -C guix/channels.scm -- shell
+DEV = -D -f guix/guix.scm
+GUIX-DEV-SHELL = $(GUIX-SHELL) $(DEV)
 
-.PHONY: shell
-shell:
-	$(GUIX-SHELL)
-
-.PHONY: container
-container:
-	$(GUIX-CONTAINER)
-
-.PHONY: exposed-container
-exposed-container:
-	$(GUIX-CONTAINER-PORT)
-
-.PHONY: dev-container
-dev-container:
-	$(GUIX-CONTAINER-PORT) $(DEVELOPMENT)
+.PHONY: guix-dev-shell
+guix-dev-shell:
+	$(GUIX-DEV-SHELL)
 
 .PHONY: ipython-shell
 ipython-shell:
-	$(GUIX-CONTAINER-PORT) $(DEVELOPMENT) -- ipython
+	$(GUIX-DEV-SHELL) -- ipython
 
 .PHONY: serial-shell
 serial-shell:
-	$(GUIX-CONTAINER-PORT) picocom -- picocom -b 9600 -f n -y n -d 8 -p 1 -c $(PORT)
+	$(GUIX-DEV-SHELL) picocom -- picocom -b 9600 -f n -y n -d 8 -p 1 -c $(PORT)
 
 .PHONY: installed-shell
 installed-shell:
-	$(GUIX-CONTAINER-PORT) -f .guix.scm --rebuild-cache
+	$(GUIX-SHELL) -f guix/guix.scm --rebuild-cache
 
 .PHONY: metadata-edits
 metadata-edits:
-	$(GUIX-CONTAINER-GUI) -- sh -c "emacs -q --no-site-file --no-site-lisp --no-splash -l .init.el --file .metadata.org"
+	$(GUIX-DEV-SHELL) -- sh -c "emacs -q --no-site-file --no-site-lisp --no-splash -l emacs/init.el --file metadata.org"
 
 .PHONY: metadata
 metadata:
-	$(GUIX-CONTAINER-DEVELOPMENT) -- sh -c "emacs --batch -Q  -l .init.el --eval '(process-org \".metadata.org\")'"
+	$(GUIX-DEV-SHELL) -- sh -c "emacs --batch -Q  -l emacs/init.el --eval '(process-org \"metadata.org\")'"
 
 .PHONY: package
 package:
-	$(GUIX-CONTAINER-DEVELOPMENT) -- sh -c "python3 setup.py sdist bdist_wheel"
+	$(GUIX-DEV-SHELL) -- sh -c "python3 setup.py sdist bdist_wheel"
 
 .PHONY: twine
 twine:
-	$(GUIX-CONTAINER-DEVELOPMENT) --network --expose=$$HOME/.pypirc -- sh -c "twine upload dist/*"
+	$(GUIX-DEV-SHELL) --network --expose=$$HOME/.pypirc -- sh -c "twine upload dist/*"
 
 .PHONY: add
 add:
-	$(GUIX-CONTAINER-DEVELOPMENT) -- sh -c "git add --all"
+	$(GUIX-DEV-SHELL) -- sh -c "git add --all"
 
 .PHONY: clean
 clean:
-	$(GUIX-CONTAINER-DEVELOPMENT) -- sh -c "git clean -xdf"
+	$(GUIX-DEV-SHELL) -- sh -c "git clean -xdf"
 #+END_SRC
 
-#+BEGIN_SRC scheme :tangle .init.el :exports none :noweb yes
-;; This file is generated automatically from .metadata.org
+#+BEGIN_SRC scheme :tangle emacs/init.el :exports none :noweb yes
+;; This file is generated automatically from metadata.org
 ;; File edits may be overwritten!
 (require 'org)
 
@@ -560,16 +544,16 @@ clean:
 
 #+END_SRC
 
-#+BEGIN_SRC text :tangle pyproject.toml :exports none :noweb yes
-# This file is generated automatically from .metadata.org
+#+BEGIN_SRC text :tangle ../pyproject.toml :exports none :noweb yes
+# This file is generated automatically from metadata.org
 # File edits may be overwritten!
 [build-system]
 requires = ["setuptools"]
 build-backed = "setuptools.build_meta"
 #+END_SRC
 
-#+BEGIN_SRC text :tangle setup.cfg :exports none :noweb yes
-# This file is generated automatically from .metadata.org
+#+BEGIN_SRC text :tangle ../setup.cfg :exports none :noweb yes
+# This file is generated automatically from metadata.org
 # File edits may be overwritten!
 [metadata]
 name = <<name>>
@@ -589,15 +573,11 @@ classifiers =
 packages = find:
 install_requires =
     <<python-dependencies>>
-
-[options.entry_points]
-console_scripts =
-    <<command-line-interface>> = <<name>>.cli:main
 #+END_SRC
 
-#+BEGIN_SRC python :tangle setup.py :exports none :noweb yes
+#+BEGIN_SRC python :tangle ../setup.py :exports none :noweb yes
 """<<description>>"""
-# This file is generated automatically from .metadata.org
+# This file is generated automatically from metadata.org
 # File edits may be overwritten!
 from setuptools import setup
 
@@ -606,9 +586,9 @@ if __name__ == '__main__':
     setup()
 #+END_SRC
 
-#+BEGIN_SRC python :tangle serial_interface/__about__.py :exports none :noweb yes
+#+BEGIN_SRC python :tangle ../serial_interface/__about__.py :exports none :noweb yes
 """<<description>>"""
-# This file is generated automatically from .metadata.org
+# This file is generated automatically from metadata.org
 # File edits may be overwritten!
 
 __version__ = '<<version>>'
@@ -620,9 +600,9 @@ __email__ = '<<email>>'
 __copyright__ = '<<copyright>>'
 #+END_SRC
 
-#+BEGIN_SRC python :tangle serial_interface/__init__.py :exports none :noweb yes
+#+BEGIN_SRC python :tangle ../serial_interface/__init__.py :exports none :noweb yes
 """<<description>>"""
-# This file is generated automatically from .metadata.org
+# This file is generated automatically from metadata.org
 # File edits may be overwritten!
 from <<name>>.__about__ import (
     __author__,
@@ -636,7 +616,7 @@ from <<name>>.__about__ import (
 from .<<name>> import SerialInterface, SerialInterfaces, find_serial_interface_ports, find_serial_interface_port, WriteFrequencyError, WriteError, ReadError, __version__
 #+END_SRC
 
-#+BEGIN_SRC text :tangle LICENSE :exports none :noweb yes
+#+BEGIN_SRC text :tangle ../LICENSE :exports none :noweb yes
 Janelia Open-Source Software (3-clause BSD License)
 
 Copyright <<copyright>>

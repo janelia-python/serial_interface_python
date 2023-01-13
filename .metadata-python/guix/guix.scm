@@ -1,4 +1,4 @@
-;; This file is generated automatically from .metadata.org
+;; This file is generated automatically from metadata.org
 ;; File edits may be overwritten!
 (use-modules
  (guix packages)
@@ -16,7 +16,7 @@
  (guix-janelia packages python-janelia)
  (guix-janelia packages python-xyz))
 
-(define %source-dir (dirname (current-filename)))
+(define %source-dir (dirname (dirname (dirname (current-filename)))))
 
 (define-public python-dev-package
   (package

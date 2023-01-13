@@ -1,35 +1,35 @@
-- [About](#org764f462)
-- [Example Usage](#orgc15df8a)
-- [Installation](#orgbd91757)
-- [Development](#org2a2493c)
+- [About](#orgace9828)
+- [Example Usage](#orga3f3e3f)
+- [Installation](#org7fa32c6)
+- [Development](#orgcf451ef)
 
-    <!-- This file is generated automatically from .metadata.org -->
+    <!-- This file is generated automatically from metadata.org -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="org764f462"></a>
+<a id="orgace9828"></a>
 
 # About
 
 ```markdown
 - Name: serial_interface
 - Description: Extends pyserial to make serial device interfaces.
-- Version: 2.3.1
-- Release Date: 2022-12-21
+- Version: 2.3.2
+- Release Date: 2023-01-13
 - Creation Date: 2018-01-11
 - License: BSD-3-Clause
 - URL: https://github.com/janelia-pypi/serial_interface_python
 - Author: Peter Polidoro
 - Email: peter@polidoro.io
-- Copyright: 2022 Howard Hughes Medical Institute
+- Copyright: 2023 Howard Hughes Medical Institute
 - References:
-  - https://pyserial.readthedocs.io
+  - https://pyserial.readthedocs.io/en/latest/
 - Dependencies:
   - pyserial
 ```
 
 
-<a id="orgc15df8a"></a>
+<a id="orga3f3e3f"></a>
 
 # Example Usage
 
@@ -72,7 +72,7 @@ dev.get_device_info()
 ```
 
 
-<a id="orgbd91757"></a>
+<a id="org7fa32c6"></a>
 
 # Installation
 
@@ -166,7 +166,7 @@ The Python code in this library may be installed in any number of ways, chose on
     ```
 
 
-<a id="org2a2493c"></a>
+<a id="orgcf451ef"></a>
 
 # Development
 
@@ -184,14 +184,14 @@ cd serial_interface_python
 ```
 
 
-## Edit .metadata.org
+## Edit metadata.org
 
 ```sh
 make metadata-edits
 ```
 
 
-## Tangle .metadata.org
+## Tangle metadata.org
 
 ```sh
 make metadata
