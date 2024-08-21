@@ -18,7 +18,7 @@ try:
         # not installed, but there is another version that *is*
         raise SystemError
     __version__ = _dist.version
-except (DistributionNotFound, ImportError, ModuleNotFoundError, SystemError):
+except (ImportError, ModuleNotFoundError, SystemError, DistributionNotFound):
     __version__ = None
 
 
