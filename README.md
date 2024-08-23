@@ -1,27 +1,27 @@
-- [About](#orgace9828)
-- [Example Usage](#orga3f3e3f)
-- [Installation](#org7fa32c6)
-- [Development](#orgcf451ef)
+- [About](#orgded366f)
+- [Example Usage](#org4345892)
+- [Installation](#org33cf4b9)
+- [Development](#org61f135b)
 
     <!-- This file is generated automatically from metadata.org -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="orgace9828"></a>
+<a id="orgded366f"></a>
 
 # About
 
 ```markdown
 - Name: serial_interface
 - Description: Extends pyserial to make serial device interfaces.
-- Version: 2.3.2
-- Release Date: 2023-01-13
+- Version: 2.4.0
+- Release Date: 2024-08-23
 - Creation Date: 2018-01-11
 - License: BSD-3-Clause
 - URL: https://github.com/janelia-pypi/serial_interface_python
 - Author: Peter Polidoro
 - Email: peter@polidoro.io
-- Copyright: 2023 Howard Hughes Medical Institute
+- Copyright: 2024 Howard Hughes Medical Institute
 - References:
   - https://pyserial.readthedocs.io/en/latest/
 - Dependencies:
@@ -29,7 +29,7 @@
 ```
 
 
-<a id="orga3f3e3f"></a>
+<a id="org4345892"></a>
 
 # Example Usage
 
@@ -72,7 +72,7 @@ dev.get_device_info()
 ```
 
 
-<a id="org7fa32c6"></a>
+<a id="org33cf4b9"></a>
 
 # Installation
 
@@ -166,7 +166,7 @@ The Python code in this library may be installed in any number of ways, chose on
     ```
 
 
-<a id="orgcf451ef"></a>
+<a id="org61f135b"></a>
 
 # Development
 

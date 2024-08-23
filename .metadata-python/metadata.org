@@ -26,7 +26,7 @@ python-serial-interface
 
 #+NAME: version
 #+BEGIN_SRC text :exports none :noweb yes
-2.3.1
+2.4.0
 #+END_SRC
 
 #+NAME: description
