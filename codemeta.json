@@ -4,9 +4,9 @@
     "license": "https://spdx.org/licenses/BSD-3-Clause",
     "codeRepository": "git+https://github.com/janelia-pypi/serial_interface_python.git",
     "dateCreated": "2018-01-11",
-    "dateModified": "2023-01-13",
+    "dateModified": "2024-08-23",
     "name": "serial_interface",
-    "version": "3.0.0",
+    "version": "2.4.0",
     "description": "Extends pyserial-asyncio to make serial device interfaces.",
     "programmingLanguage": [
         "Python 3"
